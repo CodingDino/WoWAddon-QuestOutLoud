@@ -2,11 +2,11 @@
 --   QuestOutLoud_Frames.lua   --
 ---------------------------------
 
-local parent = ObjectiveTrackerBlocksFrame
 
 -- CreateFrames
 ---- Creates the UI
 function QuestOutLoud:CreateFrames()
+	QuestOutLoud:Debug("CreateFrames()")
 	QuestOutLoud:CreateMainFrame();
 	QuestOutLoud:CreateMiniMapButton();
 	
@@ -17,16 +17,35 @@ end
 -- CreateMainFrame
 ---- Creates the parent frame for the QuestOutLoud UI
 function QuestOutLoud:CreateMainFrame()
-	QuestOutLoud.MainFrame = CreateFrame("Button", "QuestOutLoud.MainFrame", parent)
-	QuestOutLoud.MainFrame:SetParent(parent)
+	QuestOutLoud:Debug("CreateMainFrame()")
+	QuestOutLoud.MainFrame = CreateFrame("Button", "QuestOutLoud.MainFrame", UIParent)
+	QuestOutLoud.MainFrame:SetParent(UIParent)
 	QuestOutLoud.MainFrame:Show()
-	QuestOutLoud.MainFrame:SetPoint("CENTER", "UIParent", "CENTER", 0, 0);
+	QuestOutLoud.MainFrame:SetHeight(100)
+	QuestOutLoud.MainFrame:SetWidth(200)
+	QuestOutLoud.MainFrame:SetMovable(true)
+	QuestOutLoud.MainFrame:SetPoint("TOP", "UIParent", "TOP", QuestOutLoudDB.profile.position[0], QuestOutLoudDB.profile.position[1])
+	QuestOutLoud.MainFrame:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" then
+			QuestOutLoud.MainFrame:StartMoving()
+		--elseif button == "RightButton" then
+			-- TODO: EasyMenu(WoWPro.DropdownMenu, menuFrame, "cursor", 0 , 0, "MENU");
+		end
+	end)
+	QuestOutLoud.MainFrame:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" then
+			QuestOutLoud.MainFrame:StopMovingOrSizing()
+			QuestOutLoudDB.profile.position[0] = QuestOutLoud.MainFrame:GetLeft() - UIParent:GetWidth() * 0.5
+			QuestOutLoudDB.profile.position[1] = QuestOutLoud.MainFrame:GetTop() - UIParent:GetHeight()
+		end
+	end)
 end
 ----
 
 -- CreateMiniMapButton
 ---- Creates the mini map or LDB button for QuestOutLoud
 function QuestOutLoud:CreateMiniMapButton()
+	QuestOutLoud:Debug("CreateMiniMapButton()")
 	local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 	local icon = LibStub("LibDBIcon-1.0")
 
@@ -54,6 +73,7 @@ end
 -- SetupFrames
 ---- Applies user preferences to frames
 function QuestOutLoud:SetupFrames()
+	QuestOutLoud:Debug("SetupFrames()")
 	--QuestOutLoud:ResizeSet(); 
 	--QuestOutLoud:TitlebarSet(); 
 	--QuestOutLoud:PaddingSet(); 
@@ -66,6 +86,7 @@ end
 -- SetupBackground
 ---- Applies user preferences to main frame background
 function QuestOutLoud:SetupBackground()
+	QuestOutLoud:Debug("SetupBackground()")
 -- Textures and Borders --
 	QuestOutLoud.MainFrame:SetBackdrop( {
 		bgFile = QuestOutLoudDB.profile.bgtexture,

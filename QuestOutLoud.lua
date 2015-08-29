@@ -26,7 +26,8 @@ function GetDefaultProfile()
 			bgtexture = [[Interface\Tooltips\UI-Tooltip-Background]],
 			bgcolor = {0.2, 0.2, 0.2, 0.7},
 			bordertexture = [[Interface\Tooltips\UI-Tooltip-Border]],
-			border = true
+			border = true,
+			position = { 0, -10 }
 		} }
 end
 ----
@@ -60,7 +61,7 @@ function QuestOutLoud:OnEnable()
 
 	-- Event Setup --
 	QuestOutLoud:RegisterEvents( {
-		"QUEST_LOG_UPDATE", "QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_ACCEPTED"
+		"QUEST_LOG_UPDATE", "QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED"
 	})
 	
 	QuestOutLoud.EventFrame:SetScript("OnEvent",QuestOutLoud.EventHandler)

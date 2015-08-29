@@ -40,8 +40,8 @@ end
 function QuestOutLoud:Debug(message,level)
 	if message ~= nil then
 		level = level or QuestOutLoud.LOGLEVEL.DEBUG
-	    local msg = "|cffFF9900QuestOutLoud|r-|cffcc0000DEBUG|r: "..message
 		if QuestOutLoud.DebugLevel >= level then
+			local msg = "|cffFF9900QuestOutLoud|r-|cffcc0000DEBUG|r: "..message
 			DEFAULT_CHAT_FRAME:AddMessage( msg )
 		end
 		QuestOutLoud:AddLog(msg)
