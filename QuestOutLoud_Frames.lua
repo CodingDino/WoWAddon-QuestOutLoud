@@ -6,46 +6,73 @@
 -- CreateFrames
 ---- Creates the UI
 function QuestOutLoud:CreateFrames()
-	QuestOutLoud:Debug("CreateFrames()")
-	QuestOutLoud:CreateMainFrame();
-	QuestOutLoud:CreateMiniMapButton();
-	
-	QuestOutLoud:SetupFrames();
+	self:Debug("CreateFrames()")
+	self:CreateMainFrame();
+	self:CreateMiniMapButton();
 end
 ----
 
 -- CreateMainFrame
 ---- Creates the parent frame for the QuestOutLoud UI
 function QuestOutLoud:CreateMainFrame()
-	QuestOutLoud:Debug("CreateMainFrame()")
-	QuestOutLoud.MainFrame = CreateFrame("Button", "QuestOutLoud.MainFrame", UIParent)
-	QuestOutLoud.MainFrame:SetParent(UIParent)
-	QuestOutLoud.MainFrame:Show()
-	QuestOutLoud.MainFrame:SetHeight(100)
-	QuestOutLoud.MainFrame:SetWidth(200)
-	QuestOutLoud.MainFrame:SetMovable(true)
-	QuestOutLoud.MainFrame:SetPoint("TOP", "UIParent", "TOP", QuestOutLoudDB.profile.position[0], QuestOutLoudDB.profile.position[1])
-	QuestOutLoud.MainFrame:SetScript("OnMouseDown", function(self, button)
+	self:Debug("CreateMainFrame()")
+	
+	local frame = CreateFrame("Button", "QuestOutLoud.MainFrame", UIParent)
+	frame:SetParent(UIParent)
+	frame:Show()
+	--
+	frame:SetMovable(true)
+	frame:SetClampedToScreen(true)
+	--
+	frame:SetScript("OnMouseDown", function(self, button)
 		if button == "LeftButton" then
-			QuestOutLoud.MainFrame:StartMoving()
+			frame:StartMoving()
 		--elseif button == "RightButton" then
 			-- TODO: EasyMenu(WoWPro.DropdownMenu, menuFrame, "cursor", 0 , 0, "MENU");
 		end
 	end)
-	QuestOutLoud.MainFrame:SetScript("OnMouseUp", function(self, button)
+	frame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" then
-			QuestOutLoud.MainFrame:StopMovingOrSizing()
-			QuestOutLoudDB.profile.position[0] = QuestOutLoud.MainFrame:GetLeft() - UIParent:GetWidth() * 0.5
-			QuestOutLoudDB.profile.position[1] = QuestOutLoud.MainFrame:GetTop() - UIParent:GetHeight()
+			frame:StopMovingOrSizing()
+			QuestOutLoudDB.profile.posX = frame:GetLeft() - UIParent:GetWidth()*0.5 + frame:GetWidth()*0.5
+			QuestOutLoudDB.profile.posY = frame:GetTop() - UIParent:GetHeight()
 		end
 	end)
+	--
+	self.MainFrame = frame
+	--
+	self:CreateModel()
 end
 ----
+
+-- CreateModel
+---- Creates the model to be used in the main frame
+function QuestOutLoud:CreateModel()
+	local model = CreateFrame("PlayerModel", "QuestOutLoud.Model", self.MainFrame)
+	model:SetPoint("TOPLEFT", self.MainFrame ,"TOPLEFT", 5, -5)
+	model:SetPoint("BOTTOMRIGHT", self.MainFrame ,"BOTTOMLEFT", 95, 5)
+	self:SetModelID(model,823)
+	self.Model = model
+end
+----
+
+
+-- SetModel
+---- Creates the model to be used in the main frame
+function QuestOutLoud:SetModelID(model, id)
+	-- default
+	model:SetModel("world/expansion04/doodads/pandaren/scroll/pa_scroll_10.mo3")
+	--
+	model:SetCreature(id)
+	model:SetCamera(0)
+end
+----
+
 
 -- CreateMiniMapButton
 ---- Creates the mini map or LDB button for QuestOutLoud
 function QuestOutLoud:CreateMiniMapButton()
-	QuestOutLoud:Debug("CreateMiniMapButton()")
+	self:Debug("CreateMiniMapButton()")
 	local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 	local icon = LibStub("LibDBIcon-1.0")
 
@@ -54,7 +81,7 @@ function QuestOutLoud:CreateMiniMapButton()
 		icon = "Interface\\Icons\\Inv_inscription_scroll", -- TODO: Better icon!
 		OnClick = function(clickedframe, button)
 			if button == "LeftButton" then
-				QuestOutLoud:Enable(not QuestOutLoudDB.Enabled);
+				self:Enable(not QuestOutLoudDB.Enabled);
 			elseif button == "RightButton" then
 				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud")
 				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud") -- Do this twice because Blizz Bugs Suck.....
@@ -70,47 +97,49 @@ function QuestOutLoud:CreateMiniMapButton()
 end
 ----
 
+
 -- SetupFrames
 ---- Applies user preferences to frames
 function QuestOutLoud:SetupFrames()
-	QuestOutLoud:Debug("SetupFrames()")
-	--QuestOutLoud:ResizeSet(); 
-	--QuestOutLoud:TitlebarSet(); 
-	--QuestOutLoud:PaddingSet(); 
-	QuestOutLoud:SetupBackground(); 
-	--QuestOutLoud:RowSet(); 
-	--QuestOutLoud:MinimapSet();
+	self:Debug("SetupFrames()")
+	self:SetFramePoints(); 
+	self:SetupBackground(); 
 end
 ----
+
+
+-- SetFramePoints
+---- Sets up the position, width, and height of the frame
+function QuestOutLoud:SetFramePoints()
+	local frame = self.MainFrame
+	frame:ClearAllPoints()
+	frame:SetPoint("TOP", "UIParent" ,"TOP", QuestOutLoudDB.profile.posX, QuestOutLoudDB.profile.posY)
+	frame:SetHeight(QuestOutLoudDB.profile.height)
+	frame:SetWidth(QuestOutLoudDB.profile.width)
+end
+----
+
 
 -- SetupBackground
 ---- Applies user preferences to main frame background
 function QuestOutLoud:SetupBackground()
-	QuestOutLoud:Debug("SetupBackground()")
+	self:Debug("SetupBackground()")
+	local mainFrame = self.MainFrame
+	
 -- Textures and Borders --
-	QuestOutLoud.MainFrame:SetBackdrop( {
+	mainFrame:SetBackdrop( {
 		bgFile = QuestOutLoudDB.profile.bgtexture,
 		edgeFile = QuestOutLoudDB.profile.bordertexture,
 		tile = true, tileSize = 16, edgeSize = 16,
 		insets = { left = 4,  right = 3,  top = 4,  bottom = 3 }
 	})
 -- Colors --
-	QuestOutLoud.MainFrame:SetBackdropColor(QuestOutLoudDB.profile.bgcolor[1], QuestOutLoudDB.profile.bgcolor[2], QuestOutLoudDB.profile.bgcolor[3], QuestOutLoudDB.profile.bgcolor[4])
+	mainFrame:SetBackdropColor(QuestOutLoudDB.profile.bgcolor[1], QuestOutLoudDB.profile.bgcolor[2], QuestOutLoudDB.profile.bgcolor[3], QuestOutLoudDB.profile.bgcolor[4])
 -- Border enable/disable --
 	if QuestOutLoudDB.profile.border then 
-		QuestOutLoud.MainFrame:SetBackdropBorderColor(1, 1, 1, 1) 
+		mainFrame:SetBackdropBorderColor(1, 1, 1, 1) 
 	else 
-		QuestOutLoud.MainFrame:SetBackdropBorderColor(1, 1, 1, 0) 
+		mainFrame:SetBackdropBorderColor(1, 1, 1, 0) 
 	end
 end	
 ----
-
--- GetQuadrant
----- Utility function that gets the quadrant of the screen the window is in
-local function GetQuadrant(frame)
-	local x,y = frame:GetCenter()
-	local horizontal, vertical
-	if x > (UIParent:GetWidth()/2) then horizontal = "RIGHT" else horizontal = "LEFT" end
-	if y > (UIParent:GetHeight()/2) then vertical = "TOP" else vertical = "BOTTOM" end
-	return horizontal, vertical
-end

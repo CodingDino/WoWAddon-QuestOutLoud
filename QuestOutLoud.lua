@@ -3,68 +3,74 @@
 --------------------------
 
 ----
-QuestOutLoud = LibStub("AceAddon-3.0"):NewAddon("QuestOutLoud","AceEvent-3.0")
+QuestOutLoud = LibStub("AceAddon-3.0"):NewAddon("QuestOutLoud", "AceConsole-3.0", "AceEvent-3.0")
 QuestOutLoud.Version = GetAddOnMetadata("QuestOutLoud", "Version")
 ----
 
--- Tern --
----- Functional approximation of the ternary operator
-function QuestOutLoud:Tern(check, ifTrue, ifFalse)
-	if check then
-		return ifTrue;
-	else
-		return ifFalse;
-	end
-end
+----
+local defaults = {
+    profile =  {
+		bgtexture = [[Interface\Tooltips\UI-Tooltip-Background]],
+		bgcolor = {0.2, 0.2, 0.2, 0.7},
+		bordertexture = [[Interface\Tooltips\UI-Tooltip-Border]],
+		border = true,
+		posX = 0,  		-- relative to center of screen
+		posY = -10, 	-- relative to top of screen
+		width = 200,
+		height = 100,
+		playOnQuestOpen = true,
+		playOnQuestAccept = false,
+		playOnQuestProgressOpen = true,
+		playOnQuestCompleteOpen = true,
+		playOnQuestCompleted = false,
+    },
+}
 ----
 
--- GetDefaultProfile --
----- Creates a default profile object --
-function GetDefaultProfile()
-	return { profile = {  
-			drag = true,
-			bgtexture = [[Interface\Tooltips\UI-Tooltip-Background]],
-			bgcolor = {0.2, 0.2, 0.2, 0.7},
-			bordertexture = [[Interface\Tooltips\UI-Tooltip-Border]],
-			border = true,
-			position = { 0, -10 }
-		} }
-end
+----
+local options = {
+    name = "Quest Out Loud",
+    handler = QuestOutLoud,
+    type = "group",
+    args = {
+        msg = {
+            type = "execute",
+            name = "Reset Position",
+            desc = "Returns the Quest Out Loud play window to it's default position",
+            func = function()
+				QuestOutLoudDB.profile.posX = defaults.profile.posX
+				QuestOutLoudDB.profile.posY = defaults.profile.posY
+				QuestOutLoud:SetFramePoints()
+			end
+        },
+    },
+}
 ----
 
 -- OnInitialize --
 ---- Called before all addons have loaded, but after saved variables have loaded. --
 function QuestOutLoud:OnInitialize()	
-	QuestOutLoudDB = LibStub("AceDB-3.0"):New("QuestOutLoudData", GetDefaultProfile(), true) -- Creates DB object to use with Ace
+	QuestOutLoudDB = LibStub("AceDB-3.0"):New("QuestOutLoudData", defaults, true) -- Creates DB object to use with Ace
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("QuestOutLoud", options, {"questoutloud", "qol"})
+    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("QuestOutLoud", "Quest Out Loud")
 	
-	
-	QuestOutLoud:Print("Initialized.");
+	self:Debug("OnInitialize()");
+	self:RegistChatCommands();
+	self:CreateFrames()
 end
 ----
 
 -- OnEnable --
 ---- Called when the addon is enabled, and on log-in and /reload, after all addons have loaded
 function QuestOutLoud:OnEnable()
-	QuestOutLoud:Print("Enabled.")
+	self:QOLPrint("Enabled.")
 	
-	-- Loading Frames --
-	if not QuestOutLoud.FramesLoaded then --First time the addon has been enabled since UI Load
-		QuestOutLoud:CreateFrames();
-		QuestOutLoud.EventFrame = CreateFrame("Button", "QuestOutLoud.EventFrame", UIParent)
-		QuestOutLoud.EventFrame:SetScript("OnEvent",QuestOutLoud.EventHandler)
-		QuestOutLoud.FramesLoaded = true
-	else -- Addon was previously disabled, so no need to create frames, just turn them back on
-		-- TODO: Enable frames!
-	end
-	
-	QuestOutLoud:SetupFrames()	-- Applies profile display settings
+	self:SetupFrames()	-- Applies profile display settings
 
 	-- Event Setup --
-	QuestOutLoud:RegisterEvents( {
-		"QUEST_LOG_UPDATE", "QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED"
+	self:RegisterEvents( {
+		--"QUEST_LOG_UPDATE", "QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED"
 	})
-	
-	QuestOutLoud.EventFrame:SetScript("OnEvent",QuestOutLoud.EventHandler)
 end	
 ----
 
@@ -72,7 +78,7 @@ end
 -- OnDisable --
 ---- Called when the addon is disabled
 function QuestOutLoud:OnDisable()
-	QuestOutLoud.EventFrame:UnregisterAllEvents()	-- Unregisters all events
+	self:QOLPrint("Disabled.")
 end
 ----
 
@@ -81,7 +87,29 @@ end
 ---- Iterates through the supplied table of events, and registers each event to the guide frame.
 function QuestOutLoud:RegisterEvents(eventtable)
 	for _, event in ipairs(eventtable) do
-		QuestOutLoud.EventFrame:RegisterEvent(event)
+		self:RegisterEvent(event)
 	end
+end
+----
+
+
+-- RegistChatCommands --
+---- Registers chat commands using AceConsole
+function QuestOutLoud:RegistChatCommands()
+	self:RegisterChatCommand("qol", "ChatCommand")
+	self:RegisterChatCommand("questoutloud", "ChatCommand")
+	self:RegisterChatCommand("QuestOutLoud", "ChatCommand")
+end
+----
+
+
+-- ChatCommand --
+---- Handles chat commands
+function QuestOutLoud:ChatCommand(input)
+    if not input or input:trim() == "" then
+		LibStub("AceConfigDialog-3.0"):Open("QuestOutLoud")
+    else
+        LibStub("AceConfigCmd-3.0"):HandleCommand("qol", "QuestOutLoud", input)
+    end
 end
 ----

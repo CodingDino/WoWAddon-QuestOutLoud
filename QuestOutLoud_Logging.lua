@@ -41,8 +41,8 @@ function QuestOutLoud:Debug(message,level)
 	if message ~= nil then
 		level = level or QuestOutLoud.LOGLEVEL.DEBUG
 		if QuestOutLoud.DebugLevel >= level then
-			local msg = "|cffFF9900QuestOutLoud|r-|cffcc0000DEBUG|r: "..message
-			DEFAULT_CHAT_FRAME:AddMessage( msg )
+			local msg = "|cffcc0000DEBUG|r-"..message
+			self:Print( msg )
 		end
 		QuestOutLoud:AddLog(msg)
 	end
@@ -50,13 +50,12 @@ end
 ----
 
 
--- Print --
----- Shows message if debugging is enabled
-function QuestOutLoud:Print(message)
+-- QOLPrint --
+---- Print message to chat log
+function QuestOutLoud:QOLPrint(message)
 	if message ~= nil then
-	    local msg = "|cffFF9900QuestOutLoud|r: "..message
-		DEFAULT_CHAT_FRAME:AddMessage( msg )
-		QuestOutLoud:AddLog(msg)
+		self:Print( message )
+		QuestOutLoud:AddLog(message)
 	end
 end
 ----
