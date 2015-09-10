@@ -51,7 +51,7 @@ function QuestOutLoud:CreateModel()
 	local model = CreateFrame("PlayerModel", "QuestOutLoud.Model", self.MainFrame)
 	model:SetPoint("TOPLEFT", self.MainFrame ,"TOPLEFT", 5, -5)
 	model:SetPoint("BOTTOMRIGHT", self.MainFrame ,"BOTTOMLEFT", 95, 5)
-	self:SetModelID(model,823)
+	self:SetModelID(model,197)
 	self.Model = model
 end
 ----
@@ -60,9 +60,6 @@ end
 -- SetModel
 ---- Creates the model to be used in the main frame
 function QuestOutLoud:SetModelID(model, id)
-	-- default
-	model:SetModel("world/expansion04/doodads/pandaren/scroll/pa_scroll_10.mo3")
-	--
 	model:SetCreature(id)
 	model:SetCamera(0)
 end
@@ -84,7 +81,7 @@ function QuestOutLoud:CreateMiniMapButton()
 				self:Enable(not QuestOutLoudDB.Enabled);
 			elseif button == "RightButton" then
 				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud")
-				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud") -- Do this twice because Blizz Bugs Suck.....
+				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud") -- Do this twice because Blizz Bugs Suck - TODO: still doesn't work.....
 			end
 		end,
 		OnTooltipShow = function(self) 

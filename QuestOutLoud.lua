@@ -7,6 +7,15 @@ QuestOutLoud = LibStub("AceAddon-3.0"):NewAddon("QuestOutLoud", "AceConsole-3.0"
 QuestOutLoud.Version = GetAddOnMetadata("QuestOutLoud", "Version")
 ----
 
+
+----
+QuestOutLoud.sounds = {}
+QuestOutLoud.sounds.questAccept = {}
+QuestOutLoud.sounds.questProgress = {}
+QuestOutLoud.sounds.questCompletion = {}
+----
+
+
 ----
 local defaults = {
     profile =  {
@@ -113,3 +122,16 @@ function QuestOutLoud:ChatCommand(input)
     end
 end
 ----
+
+
+-- RegisterSounds --
+---- Registers sounds to be used by the addon
+function QuestOutLoud:RegisterSounds(sounds)
+	local QOL_sounds = QuestOutLoud.sounds
+	for k1,sound in pairs(sounds) do
+		for k2,triggerID in pairs(sound.triggerIDs) do
+			QOL_sounds[sound.soundTrigger][triggerID] = sound
+		end
+		self:QOLPrint("Registered sound for "..sound.soundTrigger.." - "..sound.displayTitle)
+	end
+end
