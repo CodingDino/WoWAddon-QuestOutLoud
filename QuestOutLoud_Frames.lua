@@ -8,6 +8,8 @@
 function QuestOutLoud:CreateFrames()
 	self:Debug("CreateFrames()")
 	self:CreateMainFrame();
+	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton");
+	self.QuestLogPopupDetailFrameButton = self:CreateQuestLogButton(QuestLogPopupDetailFrame, "QuestLogPopupDetailFrameButton");
 	self:CreateMiniMapButton();
 end
 ----
@@ -16,10 +18,8 @@ end
 ---- Creates the parent frame for the QuestOutLoud UI
 function QuestOutLoud:CreateMainFrame()
 	self:Debug("CreateMainFrame()")
-	
+	--
 	local frame = CreateFrame("Button", "QuestOutLoud.MainFrame", UIParent)
-	frame:SetParent(UIParent)
-	frame:Show()
 	--
 	frame:SetMovable(true)
 	frame:SetClampedToScreen(true)
@@ -39,7 +39,10 @@ function QuestOutLoud:CreateMainFrame()
 		end
 	end)
 	--
+	self:CreateStopButton(frame)
+	--
 	self.MainFrame = frame
+	frame:Hide()
 	--
 	self:CreateModel()
 end
@@ -51,7 +54,7 @@ function QuestOutLoud:CreateModel()
 	local model = CreateFrame("PlayerModel", "QuestOutLoud.Model", self.MainFrame)
 	model:SetPoint("TOPLEFT", self.MainFrame ,"TOPLEFT", 5, -5)
 	model:SetPoint("BOTTOMRIGHT", self.MainFrame ,"BOTTOMLEFT", 95, 5)
-	self:SetModelID(model,197)
+	self:SetModelID(model,0)
 	self.Model = model
 end
 ----
@@ -62,6 +65,101 @@ end
 function QuestOutLoud:SetModelID(model, id)
 	model:SetCreature(id)
 	model:SetCamera(0)
+end
+----
+
+
+-- CreateQuestLogButton
+---- Creates the button on the quest log entry
+---- Will be attached to QuestLogPopupDetailFrame, QuestFrame
+function QuestOutLoud:CreateQuestLogButton(parent, name)
+	self:Debug("CreateQuestLogButton()")
+	--
+	-- TODO: Some kind of sound symbol on button
+	--
+	local button = CreateFrame("Button", "QuestOutLoud."..name, parent)
+	button:SetPoint("TOPLEFT", parent, "TOPLEFT", 60, -30)
+	button:SetWidth(75)
+	button:SetHeight(25)
+	button:SetText("Play")
+	button:SetNormalFontObject("GameFontNormal")
+	--
+	button:SetScript("OnClick", function(self, button)
+		local index = GetQuestLogSelection()
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(index)
+		QuestOutLoud:Debug("Quest log button: QID = "..questID)
+		local triggerType = "questAccept"
+		if QuestFrameProgressPanel:IsVisible() then
+			triggerType = "questProgress"
+		elseif QuestFrameRewardPanel:IsVisible() then
+			triggerType = "questCompletion"
+		end
+		QuestOutLoud:RequestSound(triggerType,questID)
+	end)
+	--
+	local ntex = button:CreateTexture()
+	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+	ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ntex:SetAllPoints()	
+	button:SetNormalTexture(ntex)
+	--
+	local htex = button:CreateTexture()
+	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+	htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	htex:SetAllPoints()
+	button:SetHighlightTexture(htex)
+	--
+	local ptex = button:CreateTexture()
+	ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+	ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ptex:SetAllPoints()
+	button:SetPushedTexture(ptex)
+	--
+	return button
+end
+----
+
+
+-- CreateStopButton
+---- Create button to stop sound playing
+function QuestOutLoud:CreateStopButton(parent)
+	self:Debug("CreateStopButton()")
+	--
+	-- TODO: Some kind of sound symbol on button
+	--
+	local button = CreateFrame("Button", "QuestOutLoud.StopButton", parent)
+	button:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5,-5)
+	button:SetWidth(75)
+	button:SetHeight(25)
+	button:SetText("STOP")
+	button:SetNormalFontObject("GameFontNormal")
+	--
+	button:SetScript("OnClick", function(self, button)
+		if QuestOutLoud.currentSoundHandle ~= nil then
+			QuestOutLoud:StopSound()
+			-- TODO: Change to play?
+		end
+	end)
+	--
+	local ntex = button:CreateTexture()
+	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+	ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ntex:SetAllPoints()	
+	button:SetNormalTexture(ntex)
+	--
+	local htex = button:CreateTexture()
+	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+	htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	htex:SetAllPoints()
+	button:SetHighlightTexture(htex)
+	--
+	local ptex = button:CreateTexture()
+	ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+	ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ptex:SetAllPoints()
+	button:SetPushedTexture(ptex)
+	--
+	return button
 end
 ----
 

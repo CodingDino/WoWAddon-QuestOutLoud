@@ -3,7 +3,7 @@
 --------------------------
 
 ----
-QuestOutLoud = LibStub("AceAddon-3.0"):NewAddon("QuestOutLoud", "AceConsole-3.0", "AceEvent-3.0")
+QuestOutLoud = LibStub("AceAddon-3.0"):NewAddon("QuestOutLoud", "AceConsole-3.0", "AceEvent-3.0",  "AceTimer-3.0")
 QuestOutLoud.Version = GetAddOnMetadata("QuestOutLoud", "Version")
 ----
 
@@ -131,7 +131,105 @@ function QuestOutLoud:RegisterSounds(sounds)
 	for k1,sound in pairs(sounds) do
 		for k2,triggerID in pairs(sound.triggerIDs) do
 			QOL_sounds[sound.soundTrigger][triggerID] = sound
+			self:Debug("Registered sound for "..sound.soundTrigger.." - "..triggerID.." - "..sound.soundFiles[1])
 		end
-		self:QOLPrint("Registered sound for "..sound.soundTrigger.." - "..sound.displayTitle)
+		self:Debug("Registered sound for "..sound.soundTrigger.." - "..sound.displayTitle)
+	end
+end
+
+
+-- RequestSound --
+---- Requests the specified sound
+function QuestOutLoud:RequestSound(soundTrigger, triggerID)
+	self:Debug("RequestSound("..soundTrigger..", "..triggerID..")")
+	local soundInfo = self.sounds[soundTrigger][triggerID]
+	if soundInfo == nil then
+		self:Debug("No sound registered.")
+		return
+	end
+	for k1,soundFile in pairs(soundInfo.soundFiles) do
+		local filePath = "interface\\addons\\"..soundFile
+		self:QueueSound(filePath, soundInfo)
+	end
+end
+
+
+-- QueueSound --
+---- Queues the specified sound
+function QuestOutLoud:QueueSound(filePath, soundInfo)
+	self:Debug("QueueSound("..filePath..")")
+	--
+	if self.soundQueue == nil then
+		self.soundQueue = Queue:new()
+	end
+	--
+	if self.currentSoundHandle == nil then
+		self:PlaySound(filePath, soundInfo)
+	else
+		self:Debug("Sound queued.")
+		local queuedSound = {
+			file = filePath,
+			info = soundInfo
+		}
+		self.soundQueue:push(queuedSound)
+	end
+end
+
+
+-- SoundPlaybackFinished --
+---- Called when the timer for the current sound playback is done
+function QuestOutLoud:SoundPlaybackFinished()
+	self:Debug("SoundPlaybackFinished")
+	self.currentSoundHandle = nil
+	self.currentSoundInfo = nil
+	self.playing = false
+	self.soundTimer = nil
+	-- Play new sound from queue
+	if self.soundQueue:empty() == false then
+		local toPlay = self.soundQueue:pop()
+		self:Debug("Queuing up new sound "..toPlay.file )
+		self:PlaySound(toPlay.file, toPlay.info)
+	else
+		self:Debug("Queue empty, hiding main frame." )
+		self.MainFrame:Hide() -- Hide frame if we're done playing
+	end
+end
+
+
+-- PlaySound --
+---- Plays the specified sound
+function QuestOutLoud:PlaySound(filePath, soundInfo)
+	self:Debug("PlaySound("..filePath..")")
+	--
+	if self.currentSoundHandle ~= nil then
+		self:Debug("PlaySound() called when currentSoundHandle not nil, probably an error.")
+		self:StopSound()
+	end
+	--
+	local success, soundHandle = PlaySoundFile(filePath, "Dialog")
+	if success ~= nil then
+		self:Debug("Playing sound "..filePath)
+		self.currentSoundHandle = soundHandle
+		self.currentSoundInfo = soundInfo
+		self.playing = true
+		self.soundTimer = self:ScheduleTimer("SoundPlaybackFinished", soundInfo.duration)
+		--
+		self.MainFrame:Show()
+		self:SetModelID(self.Model, soundInfo.modelID)
+	else
+		self:Error("Failed to play sound "..filePath)
+	end
+	--
+end
+
+
+-- StopSound --
+---- Stops the current sound from playing
+function QuestOutLoud:StopSound()
+	if QuestOutLoud.currentSoundHandle ~= nil then
+		StopSound(QuestOutLoud.currentSoundHandle)
+		self.playing = false
+		self:CancelTimer(self.soundTimer)
+		self.soundTimer = nil
 	end
 end

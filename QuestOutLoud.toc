@@ -15,7 +15,7 @@ Libraries\AceEvent-3.0\AceEvent-3.0.xml
 Libraries\AceGUI-3.0\AceGUI-3.0.xml
 Libraries\AceConfig-3.0\AceConfig-3.0.xml
 Libraries\AceDB-3.0\AceDB-3.0.xml
-Libraries\AceConfig-3.0\AceConfig-3.0.xml
+Libraries\AceTimer-3.0\AceTimer-3.0.xml
 Libraries\LibSharedMedia-3.0\lib.xml
 Libraries\AceGUI-3.0-SharedMediaWidgets\widget.xml
 Libraries\LibDataBroker-1.1\LibDataBroker-1.1.lua
