@@ -74,8 +74,8 @@ end
 
 
 -- Queues --
-Queue = {}
-function Queue:new ()
+QuestOutLoud.Queue = {}
+function QuestOutLoud.Queue:new ()
 	local queue = {
 		first = 0,
 		last = -1
