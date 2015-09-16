@@ -62,7 +62,7 @@ function QuestOutLoud:OnInitialize()
 	QuestOutLoudDB = LibStub("AceDB-3.0"):New("QuestOutLoudData", defaults, true) -- Creates DB object to use with Ace
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("QuestOutLoud", options, {"questoutloud", "qol"})
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("QuestOutLoud", "Quest Out Loud")
-	self.soundQueue = Queue:new()
+	self.soundQueue = QuestOutLoud.Queue:new()
 	
 	self:Debug("OnInitialize()");
 	self:RegistChatCommands();
