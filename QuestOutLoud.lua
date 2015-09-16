@@ -60,8 +60,9 @@ local options = {
 ---- Called before all addons have loaded, but after saved variables have loaded. --
 function QuestOutLoud:OnInitialize()	
 	QuestOutLoudDB = LibStub("AceDB-3.0"):New("QuestOutLoudData", defaults, true) -- Creates DB object to use with Ace
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("QuestOutLoud", options, {"questoutloud", "qol"})
-    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("QuestOutLoud", "Quest Out Loud")
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("QuestOutLoud", options, {"questoutloud", "qol"})
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("QuestOutLoud", "Quest Out Loud")
+	self.soundQueue = Queue:new()
 	
 	self:Debug("OnInitialize()");
 	self:RegistChatCommands();
@@ -158,10 +159,6 @@ end
 ---- Queues the specified sound
 function QuestOutLoud:QueueSound(filePath, soundInfo)
 	self:Debug("QueueSound("..filePath..")")
-	--
-	if self.soundQueue == nil then
-		self.soundQueue = Queue:new()
-	end
 	--
 	if self.currentSoundHandle == nil then
 		self:PlaySound(filePath, soundInfo)
