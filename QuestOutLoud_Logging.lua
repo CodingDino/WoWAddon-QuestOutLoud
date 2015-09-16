@@ -97,11 +97,17 @@ function QuestOutLoud.Queue:new ()
 	--
 	queue.pop = function(self)
 	  local first = self.first
-	  if first > self.last then error("queue is empty") end
+	  if self:empty then error("queue is empty") end
 	  local value = self[first]
 	  self[first] = nil        -- to allow garbage collection
 	  self.first = first + 1
 	  return value
+	end
+	--
+	queue.clear = function(self)
+	  while ~self:empty do
+	    self:pop
+	  end
 	end
 	--
 	return queue
