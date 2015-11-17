@@ -2,6 +2,7 @@
 --   QuestOutLoud.lua   --
 --------------------------
 
+
 ----
 QuestOutLoud = LibStub("AceAddon-3.0"):NewAddon("QuestOutLoud", "AceConsole-3.0", "AceEvent-3.0",  "AceTimer-3.0")
 QuestOutLoud.Version = GetAddOnMetadata("QuestOutLoud", "Version")
@@ -13,6 +14,11 @@ QuestOutLoud.sounds = {}
 QuestOutLoud.sounds.questAccept = {}
 QuestOutLoud.sounds.questProgress = {}
 QuestOutLoud.sounds.questCompletion = {}
+----
+
+
+----
+QuestOutLoud.modules = {}
 ----
 
 
@@ -36,6 +42,7 @@ local defaults = {
 }
 ----
 
+
 ----
 local options = {
     name = "Quest Out Loud",
@@ -56,6 +63,7 @@ local options = {
 }
 ----
 
+
 -- OnInitialize --
 ---- Called before all addons have loaded, but after saved variables have loaded. --
 function QuestOutLoud:OnInitialize()	
@@ -69,6 +77,7 @@ function QuestOutLoud:OnInitialize()
 end
 ----
 
+
 -- OnEnable --
 ---- Called when the addon is enabled, and on log-in and /reload, after all addons have loaded
 function QuestOutLoud:OnEnable()
@@ -76,10 +85,10 @@ function QuestOutLoud:OnEnable()
 	
 	self:SetupFrames()	-- Applies profile display settings
 
-	-- Event Setup --
-	self:RegisterEvents( {
-		--"QUEST_LOG_UPDATE", "QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED"
-	})
+	-- Enable all modules
+	for name, module in self:IterateModules() do
+  		module:Enable()
+	end
 end	
 ----
 
@@ -130,19 +139,20 @@ function QuestOutLoud:RegisterSounds(sounds)
 	local QOL_sounds = QuestOutLoud.sounds
 	for k1,sound in pairs(sounds) do
 		for k2,triggerID in pairs(sound.triggerIDs) do
-			QOL_sounds[sound.soundTrigger][triggerID] = sound
-			self:Debug("Registered sound for "..sound.soundTrigger.." - "..triggerID.." - "..sound.soundFiles[1])
+			QOL_sounds[sound.triggerType][triggerID] = sound
+			--self:Debug("Registered sound for "..sound.triggerType.." - "..triggerID.." - "..sound.soundFiles[1])
 		end
-		self:Debug("Registered sound for "..sound.soundTrigger.." - "..sound.displayTitle)
+		--self:Debug("Registered sound for "..sound.triggerType.." - "..sound.displayTitle)
 	end
 end
+----
 
 
 -- RequestSound --
 ---- Requests the specified sound
-function QuestOutLoud:RequestSound(soundTrigger, triggerID)
-	self:Debug("RequestSound("..soundTrigger..", "..triggerID..")")
-	local soundInfo = self.sounds[soundTrigger][triggerID]
+function QuestOutLoud:RequestSound(triggerType, triggerID)
+	self:Debug("RequestSound("..triggerType..", "..triggerID..")")
+	local soundInfo = self.sounds[triggerType][triggerID]
 	if soundInfo == nil then
 		self:Debug("No sound registered.")
 		return
@@ -152,6 +162,7 @@ function QuestOutLoud:RequestSound(soundTrigger, triggerID)
 		self:QueueSound(filePath, soundInfo)
 	end
 end
+----
 
 
 -- QueueSound --
@@ -174,6 +185,7 @@ function QuestOutLoud:QueueSound(filePath, soundInfo)
 		self.soundQueue:push(queuedSound)
 	end
 end
+----
 
 
 -- SoundPlaybackFinished --
@@ -194,6 +206,7 @@ function QuestOutLoud:SoundPlaybackFinished()
 		self.MainFrame:Hide() -- Hide frame if we're done playing
 	end
 end
+----
 
 
 -- PlaySound --
@@ -221,6 +234,7 @@ function QuestOutLoud:PlaySound(filePath, soundInfo)
 	end
 	--
 end
+----
 
 
 -- StopSound --

@@ -8,11 +8,10 @@
 function QuestOutLoud:CreateFrames()
 	self:Debug("CreateFrames()")
 	self:CreateMainFrame();
-	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton");
-	self.QuestLogPopupDetailFrameButton = self:CreateQuestLogButton(QuestLogPopupDetailFrame, "QuestLogPopupDetailFrameButton");
 	self:CreateMiniMapButton();
 end
 ----
+
 
 -- CreateMainFrame
 ---- Creates the parent frame for the QuestOutLoud UI
@@ -48,6 +47,7 @@ function QuestOutLoud:CreateMainFrame()
 end
 ----
 
+
 -- CreateModel
 ---- Creates the model to be used in the main frame
 function QuestOutLoud:CreateModel()
@@ -65,57 +65,6 @@ end
 function QuestOutLoud:SetModelID(model, id)
 	model:SetCreature(id)
 	model:SetCamera(0)
-end
-----
-
-
--- CreateQuestLogButton
----- Creates the button on the quest log entry
----- Will be attached to QuestLogPopupDetailFrame, QuestFrame
-function QuestOutLoud:CreateQuestLogButton(parent, name)
-	self:Debug("CreateQuestLogButton()")
-	--
-	-- TODO: Some kind of sound symbol on button
-	--
-	local button = CreateFrame("Button", "QuestOutLoud."..name, parent)
-	button:SetPoint("TOPLEFT", parent, "TOPLEFT", 60, -30)
-	button:SetWidth(75)
-	button:SetHeight(25)
-	button:SetText("Play")
-	button:SetNormalFontObject("GameFontNormal")
-	--
-	button:SetScript("OnClick", function(self, button)
-		local index = GetQuestLogSelection()
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(index)
-		QuestOutLoud:Debug("Quest log button: QID = "..questID)
-		local triggerType = "questAccept"
-		if QuestFrameProgressPanel:IsVisible() then
-			triggerType = "questProgress"
-		elseif QuestFrameRewardPanel:IsVisible() then
-			triggerType = "questCompletion"
-		end
-		QuestOutLoud:RequestSound(triggerType,questID)
-	end)
-	--
-	local ntex = button:CreateTexture()
-	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
-	ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-	ntex:SetAllPoints()	
-	button:SetNormalTexture(ntex)
-	--
-	local htex = button:CreateTexture()
-	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-	htex:SetTexCoord(0, 0.625, 0, 0.6875)
-	htex:SetAllPoints()
-	button:SetHighlightTexture(htex)
-	--
-	local ptex = button:CreateTexture()
-	ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
-	ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-	ptex:SetAllPoints()
-	button:SetPushedTexture(ptex)
-	--
-	return button
 end
 ----
 
@@ -221,16 +170,18 @@ function QuestOutLoud:SetupBackground()
 	self:Debug("SetupBackground()")
 	local mainFrame = self.MainFrame
 	
--- Textures and Borders --
+	-- Textures and Borders --
 	mainFrame:SetBackdrop( {
 		bgFile = QuestOutLoudDB.profile.bgtexture,
 		edgeFile = QuestOutLoudDB.profile.bordertexture,
 		tile = true, tileSize = 16, edgeSize = 16,
 		insets = { left = 4,  right = 3,  top = 4,  bottom = 3 }
 	})
--- Colors --
+
+	-- Colors --
 	mainFrame:SetBackdropColor(QuestOutLoudDB.profile.bgcolor[1], QuestOutLoudDB.profile.bgcolor[2], QuestOutLoudDB.profile.bgcolor[3], QuestOutLoudDB.profile.bgcolor[4])
--- Border enable/disable --
+
+	-- Border enable/disable --
 	if QuestOutLoudDB.profile.border then 
 		mainFrame:SetBackdropBorderColor(1, 1, 1, 1) 
 	else 
