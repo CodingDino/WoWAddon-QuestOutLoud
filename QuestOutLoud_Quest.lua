@@ -9,6 +9,15 @@ QuestOutLoud_Quest.parent = QuestOutLoud
 ----
 
 
+----
+QuestOutLoud.defaults.profile.playOnQuestOpen = true
+QuestOutLoud.defaults.profile.playOnQuestAccept = false
+QuestOutLoud.defaults.profile.playOnQuestProgressOpen = true
+QuestOutLoud.defaults.profile.playOnQuestCompleteOpen = true
+QuestOutLoud.defaults.profile.playOnQuestCompleted = false
+----
+
+
 -- OnEnable --
 ---- Called when the addon is enabled, and on log-in and /reload, after all addons have loaded
 function QuestOutLoud_Quest:OnEnable()
@@ -16,7 +25,7 @@ function QuestOutLoud_Quest:OnEnable()
 
 	-- Event Setup --
 	self:RegisterEvents( {
-		"QUEST_LOG_UPDATE", "QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED"
+		"QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED", "QUEST_COMPLETE"
 	})
 
 	-- Quest log buttons --
@@ -87,37 +96,21 @@ end
 ----
 
 
--- QUEST_LOG_UPDATE
----- EVENT - Called when the quest log is updated
-function QuestOutLoud_Quest:QUEST_LOG_UPDATE()
+-- QUEST_GREETING
+---- EVENT - Called when the quest greeting is shown
+function QuestOutLoud_Quest:QUEST_GREETING()
+	self.parent:Debug("QUEST_GREETING()")
 end
 ----
 
 
 -- QUEST_DETAIL
----- EVENT - Called the quest detail page is shown
+---- EVENT - Called the quest detail page is shown (to accept a quest)
 function QuestOutLoud_Quest:QUEST_DETAIL()
-end
-----
-
-
--- QUEST_GREETING
----- EVENT - Called when the quest greeting is shown
-function QuestOutLoud_Quest:QUEST_GREETING()
-end
-----
-
-
--- QUEST_TURNED_IN
----- EVENT - Called when a quest is turned in
-function QuestOutLoud_Quest:QUEST_TURNED_IN()
-end
-----
-
-
--- QUEST_PROGRESS
----- EVENT - Called when the quest progress page is shown
-function QuestOutLoud_Quest:QUEST_PROGRESS()
+	self.parent:Debug("QUEST_DETAIL()")
+	if (QuestOutLoudDB.profile.playOnQuestOpen) then
+		QuestOutLoud:RequestSound("questAccept",GetQuestID())
+	end
 end
 ----
 
@@ -125,5 +118,42 @@ end
 -- QUEST_ACCEPTED
 ---- EVENT - Called when a quest is accepted
 function QuestOutLoud_Quest:QUEST_ACCEPTED()
+	self.parent:Debug("QUEST_ACCEPTED()")
+	if (QuestOutLoudDB.profile.playOnQuestAccept) then
+		QuestOutLoud:RequestSound("questAccept",GetQuestID())
+	end
+end
+----
+
+
+-- QUEST_PROGRESS
+---- EVENT - Called when the quest progress page is shown (when speaking to an NPC whose quest you are working on but have NOT completed)
+function QuestOutLoud_Quest:QUEST_PROGRESS()
+	self.parent:Debug("QUEST_PROGRESS()")
+	if (QuestOutLoudDB.profile.playOnQuestProgressOpen) then
+		QuestOutLoud:RequestSound("questProgress",GetQuestID())
+	end
+end
+----
+
+
+-- QUEST_COMPLETE
+---- EVENT - Called when a quest complete page is shown (about to turn in)
+function QuestOutLoud_Quest:QUEST_COMPLETE()
+	self.parent:Debug("QUEST_COMPLETE()")
+	if (QuestOutLoudDB.profile.playOnQuestCompleteOpen) then
+		QuestOutLoud:RequestSound("questCompletion",GetQuestID())
+	end
+end
+----
+
+
+-- QUEST_TURNED_IN
+---- EVENT - Called when a quest is turned in
+function QuestOutLoud_Quest:QUEST_TURNED_IN()
+	self.parent:Debug("QUEST_TURNED_IN()")
+	if (QuestOutLoudDB.profile.playOnQuestCompleted) then
+		QuestOutLoud:RequestSound("questCompletion",GetQuestID())
+	end
 end
 ----

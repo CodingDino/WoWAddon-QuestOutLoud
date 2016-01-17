@@ -23,7 +23,7 @@ QuestOutLoud.modules = {}
 
 
 ----
-local defaults = {
+QuestOutLoud.defaults = {
     profile =  {
 		bgtexture = [[Interface\Tooltips\UI-Tooltip-Background]],
 		bgcolor = {0.2, 0.2, 0.2, 0.7},
@@ -54,8 +54,8 @@ local options = {
             name = "Reset Position",
             desc = "Returns the Quest Out Loud play window to it's default position",
             func = function()
-				QuestOutLoudDB.profile.posX = defaults.profile.posX
-				QuestOutLoudDB.profile.posY = defaults.profile.posY
+				QuestOutLoudDB.profile.posX = QuestOutLoud.defaults.profile.posX
+				QuestOutLoudDB.profile.posY = QuestOutLoud.defaults.profile.posY
 				QuestOutLoud:SetFramePoints()
 			end
         },
@@ -67,7 +67,7 @@ local options = {
 -- OnInitialize --
 ---- Called before all addons have loaded, but after saved variables have loaded. --
 function QuestOutLoud:OnInitialize()	
-	QuestOutLoudDB = LibStub("AceDB-3.0"):New("QuestOutLoudData", defaults, true) -- Creates DB object to use with Ace
+	QuestOutLoudDB = LibStub("AceDB-3.0"):New("QuestOutLoudData", QuestOutLoud.defaults, true) -- Creates DB object to use with Ace
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("QuestOutLoud", options, {"questoutloud", "qol"})
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("QuestOutLoud", "Quest Out Loud")
 	self.soundQueue = QuestOutLoud.Queue:new()
