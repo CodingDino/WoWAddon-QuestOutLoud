@@ -62,7 +62,8 @@ function QuestOutLoud_Quest:CreateQuestLogButton(parent, name)
 	--
 	button:SetScript("OnClick", function(self, button)
 		local index = GetQuestLogSelection()
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(index)
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory, isHidden = GetQuestLogTitle(index)
+		if questID == 0 then questID = GetQuestID() end
 		QuestOutLoud:Debug("Quest log button: QID = "..questID)
 		local triggerType = "questAccept"
 		if QuestFrameProgressPanel:IsVisible() then
