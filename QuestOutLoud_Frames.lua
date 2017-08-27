@@ -44,6 +44,7 @@ function QuestOutLoud:CreateMainFrame()
 	frame:Hide()
 	--
 	self:CreateModel()
+	self:CreateSpeakerName(self.Model)
 end
 ----
 
@@ -53,18 +54,49 @@ end
 function QuestOutLoud:CreateModel()
 	local model = CreateFrame("PlayerModel", "QuestOutLoud.Model", self.MainFrame)
 	model:SetPoint("TOPLEFT", self.MainFrame ,"TOPLEFT", 5, -5)
-	model:SetPoint("BOTTOMRIGHT", self.MainFrame ,"BOTTOMLEFT", 95, 5)
+	model:SetPoint("BOTTOMRIGHT", self.MainFrame ,"BOTTOMLEFT", 95, 25)
+	
+	-- Textures and Borders --
+	model:SetBackdrop( {
+		bgFile = QuestOutLoudDB.profile.bgtexture,
+		edgeFile = QuestOutLoudDB.profile.bordertexture,
+		tile = true, tileSize = 16, edgeSize = 16,
+		insets = { left = 4,  right = 3,  top = 4,  bottom = 3 }
+	})
+	
 	self:SetModelID(model,0)
 	self.Model = model
 end
 ----
 
 
--- SetModel
----- Creates the model to be used in the main frame
+-- SetModelID
+---- Sets the model id of the model displayed in the main frame
 function QuestOutLoud:SetModelID(model, id)
 	model:SetCreature(id)
 	model:SetCamera(0)
+end
+----
+
+
+-- CreateSpeakerName
+---- Creates the text for the speaking character's name
+function QuestOutLoud:CreateSpeakerName(parent)
+	local text = CreateFrame("Button", "QuestOutLoud.StopButton", parent)
+	text:SetPoint("TOP", parent, "BOTTOM", 0,0)
+	text:SetWidth(75)
+	text:SetHeight(25)
+	text:SetText("TEST NAME")
+	text:SetNormalFontObject("GameFontNormal")
+	self.SpeakerName = text
+end
+----
+
+
+-- SetSpeakerName
+---- Sets the name of the speaker displayed on the main frame
+function QuestOutLoud:SetSpeakerName(frame, name)
+	frame:SetText(name)
 end
 ----
 
@@ -128,7 +160,6 @@ function QuestOutLoud:CreateMiniMapButton()
 				self:Enable(not QuestOutLoudDB.Enabled);
 			elseif button == "RightButton" then
 				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud")
-				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud") -- Do this twice because Blizz Bugs Suck - TODO: still doesn't work.....
 			end
 		end,
 		OnTooltipShow = function(self) 

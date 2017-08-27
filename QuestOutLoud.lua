@@ -73,7 +73,7 @@ function QuestOutLoud:OnInitialize()
 	self.soundQueue = QuestOutLoud.Queue:new()
 	
 	self:Debug("OnInitialize()");
-	self:RegistChatCommands();
+	self:RegisterChatCommands();
 	self:CreateFrames()
 end
 ----
@@ -114,7 +114,7 @@ end
 
 -- RegistChatCommands --
 ---- Registers chat commands using AceConsole
-function QuestOutLoud:RegistChatCommands()
+function QuestOutLoud:RegisterChatCommands()
 	self:RegisterChatCommand("qol", "ChatCommand")
 	self:RegisterChatCommand("questoutloud", "ChatCommand")
 	self:RegisterChatCommand("QuestOutLoud", "ChatCommand")
@@ -226,6 +226,7 @@ function QuestOutLoud:PlaySound(filePath, soundInfo)
 		--
 		self.MainFrame:Show()
 		self:SetModelID(self.Model, soundInfo.modelID)
+		self:SetSpeakerName(self.SpeakerName, soundInfo.NPCName)
 	else
 		self:Error("Failed to play sound "..filePath)
 	end
