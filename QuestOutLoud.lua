@@ -49,15 +49,40 @@ local options = {
     handler = QuestOutLoud,
     type = "group",
     args = {
-        msg = {
-            type = "execute",
-            name = "Reset Position",
-            desc = "Returns the Quest Out Loud play window to it's default position",
-            func = function()
-				QuestOutLoudDB.profile.posX = QuestOutLoud.defaults.profile.posX
-				QuestOutLoudDB.profile.posY = QuestOutLoud.defaults.profile.posY
-				QuestOutLoud:SetFramePoints()
-			end
+        playOnQuestOpen = {
+            type = "toggle",
+            name = "Play on Open",
+            desc = "Automatically plays the quest accept text on when opening the quest before accepting it",
+            get = function(info) return QuestOutLoudDB.profile.playOnQuestOpen end,
+            set = function(info,val) QuestOutLoudDB.profile.playOnQuestOpen = val end
+        },
+        playOnQuestAccept = {
+            type = "toggle",
+            name = "Play on Accept",
+            desc = "Automatically plays the quest accept text on accepting a quest",
+            get = function(info) return QuestOutLoudDB.profile.playOnQuestAccept end,
+            set = function(info,val) QuestOutLoudDB.profile.playOnQuestAccept = val end
+        },
+        playOnQuestProgressOpen = {
+            type = "toggle",
+            name = "Play on Progress Open",
+            desc = "Automatically plays the quest progress text on when opening the quest before completing it",
+            get = function(info) return QuestOutLoudDB.profile.playOnQuestProgressOpen end,
+            set = function(info,val) QuestOutLoudDB.profile.playOnQuestProgressOpen = val end
+        },
+        playOnQuestCompleteOpen = {
+            type = "toggle",
+            name = "Play on Completion Open",
+            desc = "Automatically plays the quest completion text on when opening the quest before completing it",
+            get = function(info) return QuestOutLoudDB.profile.playOnQuestCompleteOpen end,
+            set = function(info,val) QuestOutLoudDB.profile.playOnQuestCompleteOpen = val end
+        },
+        playOnQuestCompleted = {
+            type = "toggle",
+            name = "Play on Complete",
+            desc = "Automatically plays the quest complete text on completing a quest",
+            get = function(info) return QuestOutLoudDB.profile.playOnQuestCompleted end,
+            set = function(info,val) QuestOutLoudDB.profile.playOnQuestCompleted = val end
         },
     },
 }
