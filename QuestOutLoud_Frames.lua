@@ -7,7 +7,6 @@
 ---- Creates the UI
 function QuestOutLoud:CreateFrames()
 	self:Debug("CreateFrames()")
-	self:CreateMainFrame();
 	self:CreateMiniMapButton();
 end
 ----
