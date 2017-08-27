@@ -57,7 +57,7 @@ function QuestOutLoud_Quest:CreateQuestLogButton(parent, name)
 	button:SetPoint("TOPLEFT", parent, "TOPLEFT", 60, -30)
 	button:SetWidth(75)
 	button:SetHeight(25)
-	button:SetText("Play")
+	button:SetText("QOL")
 	button:SetNormalFontObject("GameFontNormal")
 	--
 	button:SetScript("OnClick", function(self, button)
