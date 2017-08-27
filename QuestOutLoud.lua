@@ -38,6 +38,7 @@ QuestOutLoud.defaults = {
 		playOnQuestProgressOpen = true,
 		playOnQuestCompleteOpen = true,
 		playOnQuestCompleted = false,
+		showButton = true,
     },
 }
 ----
@@ -49,41 +50,72 @@ local options = {
     handler = QuestOutLoud,
     type = "group",
     args = {
-        playOnQuestOpen = {
-            type = "toggle",
-            name = "Play on Open",
-            desc = "Automatically plays the quest accept text on when opening the quest before accepting it",
-            get = function(info) return QuestOutLoudDB.profile.playOnQuestOpen end,
-            set = function(info,val) QuestOutLoudDB.profile.playOnQuestOpen = val end
+        buttons = {
+            type = "group",
+            name = "Button Settings",
+            inline = true,
+    		args = {
+		        showButton = {
+		            type = "toggle",
+		            name = "Show Button In Log",
+		            desc = "Whether or not we should show the play button in the quest log.",
+		            get = function(info) return QuestOutLoudDB.profile.showButton end,
+		            set = function(info,val) 
+		            	QuestOutLoudDB.profile.showButton = val
+		            	if QuestOutLoudDB.profile.showButton == true then
+		            		QuestOutLoud_Quest.QuestFrameButton:Show()
+		            		QuestOutLoud_Quest.QuestMapFrameButton:Show()
+		            	else
+		            		QuestOutLoud_Quest.QuestFrameButton:Hide()
+		            		QuestOutLoud_Quest.QuestMapFrameButton:Hide()
+		            	end
+		        	end
+		        }
+    		}
         },
-        playOnQuestAccept = {
-            type = "toggle",
-            name = "Play on Accept",
-            desc = "Automatically plays the quest accept text on accepting a quest",
-            get = function(info) return QuestOutLoudDB.profile.playOnQuestAccept end,
-            set = function(info,val) QuestOutLoudDB.profile.playOnQuestAccept = val end
+        autoplay = {
+            type = "group",
+            name = "Automatic Play Settings",
+            inline = true,
+    		args = {
+    			playOnQuestOpen = {
+		            type = "toggle",
+		            name = "Play on Open",
+		            desc = "Automatically plays the quest accept text on when opening the quest before accepting it",
+		            get = function(info) return QuestOutLoudDB.profile.playOnQuestOpen end,
+		            set = function(info,val) QuestOutLoudDB.profile.playOnQuestOpen = val end
+		        },
+		        playOnQuestAccept = {
+		            type = "toggle",
+		            name = "Play on Accept",
+		            desc = "Automatically plays the quest accept text on accepting a quest",
+		            get = function(info) return QuestOutLoudDB.profile.playOnQuestAccept end,
+		            set = function(info,val) QuestOutLoudDB.profile.playOnQuestAccept = val end
+		        },
+		        playOnQuestProgressOpen = {
+		            type = "toggle",
+		            name = "Play on Progress Open",
+		            desc = "Automatically plays the quest progress text on when opening the quest before completing it",
+		            get = function(info) return QuestOutLoudDB.profile.playOnQuestProgressOpen end,
+		            set = function(info,val) QuestOutLoudDB.profile.playOnQuestProgressOpen = val end
+		        },
+		        playOnQuestCompleteOpen = {
+		            type = "toggle",
+		            name = "Play on Completion Open",
+		            desc = "Automatically plays the quest completion text on when opening the quest before completing it",
+		            get = function(info) return QuestOutLoudDB.profile.playOnQuestCompleteOpen end,
+		            set = function(info,val) QuestOutLoudDB.profile.playOnQuestCompleteOpen = val end
+		        },
+		        playOnQuestCompleted = {
+		            type = "toggle",
+		            name = "Play on Complete",
+		            desc = "Automatically plays the quest complete text on completing a quest",
+		            get = function(info) return QuestOutLoudDB.profile.playOnQuestCompleted end,
+		            set = function(info,val) QuestOutLoudDB.profile.playOnQuestCompleted = val end
+		        },
+    		}
         },
-        playOnQuestProgressOpen = {
-            type = "toggle",
-            name = "Play on Progress Open",
-            desc = "Automatically plays the quest progress text on when opening the quest before completing it",
-            get = function(info) return QuestOutLoudDB.profile.playOnQuestProgressOpen end,
-            set = function(info,val) QuestOutLoudDB.profile.playOnQuestProgressOpen = val end
-        },
-        playOnQuestCompleteOpen = {
-            type = "toggle",
-            name = "Play on Completion Open",
-            desc = "Automatically plays the quest completion text on when opening the quest before completing it",
-            get = function(info) return QuestOutLoudDB.profile.playOnQuestCompleteOpen end,
-            set = function(info,val) QuestOutLoudDB.profile.playOnQuestCompleteOpen = val end
-        },
-        playOnQuestCompleted = {
-            type = "toggle",
-            name = "Play on Complete",
-            desc = "Automatically plays the quest complete text on completing a quest",
-            get = function(info) return QuestOutLoudDB.profile.playOnQuestCompleted end,
-            set = function(info,val) QuestOutLoudDB.profile.playOnQuestCompleted = val end
-        },
+        
     },
 }
 ----

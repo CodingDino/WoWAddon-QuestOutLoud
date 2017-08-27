@@ -26,11 +26,19 @@ function QuestOutLoud_Quest:OnEnable()
 	-- Event Setup --
 	self:RegisterEvents( {
 		"QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED", "QUEST_COMPLETE"
+		--, "QUEST_LOG_UPDATE"
 	})
 
 	-- Quest log buttons --
-	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton");
-	self.QuestLogPopupDetailFrameButton = self:CreateQuestLogButton(QuestLogPopupDetailFrame, "QuestLogPopupDetailFrameButton");
+	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton", 60, -30)
+	self.QuestMapFrameButton = self:CreateQuestLogButton(QuestMapFrame, "QuestMapFrameButton", 150, 30)
+	if QuestOutLoudDB.profile.showButton == true then
+		QuestOutLoud_Quest.QuestFrameButton:Show()
+		QuestOutLoud_Quest.QuestMapFrameButton:Show()
+	else
+		QuestOutLoud_Quest.QuestFrameButton:Hide()
+		QuestOutLoud_Quest.QuestMapFrameButton:Hide()
+	end
 end	
 ----
 
@@ -48,13 +56,13 @@ end
 -- CreateQuestLogButton
 ---- Creates the button on the quest log entry
 ---- Will be attached to QuestLogPopupDetailFrame, QuestFrame
-function QuestOutLoud_Quest:CreateQuestLogButton(parent, name)
+function QuestOutLoud_Quest:CreateQuestLogButton(parent, name, posX, posY)
 	self.parent:Debug("CreateQuestLogButton()")
 	--
 	-- TODO: Some kind of sound symbol on button
 	--
 	local button = CreateFrame("Button", "QuestOutLoud."..name, parent)
-	button:SetPoint("TOPLEFT", parent, "TOPLEFT", 60, -30)
+	button:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
 	button:SetWidth(75)
 	button:SetHeight(25)
 	button:SetText("QOL")
@@ -156,5 +164,13 @@ function QuestOutLoud_Quest:QUEST_TURNED_IN()
 	if (QuestOutLoudDB.profile.playOnQuestCompleted) then
 		QuestOutLoud:RequestSound("questCompletion",GetQuestID())
 	end
+end
+----
+
+
+-- QUEST_LOG_UPDATE
+---- EVENT - Called when a quest is updated
+function QuestOutLoud_Quest:QUEST_LOG_UPDATE()
+	self.parent:Debug("QUEST_LOG_UPDATE()")
 end
 ----
