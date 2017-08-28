@@ -19,6 +19,15 @@ function QuestOutLoud.Queue:new ()
 	  end
 	end
 	--
+	queue.contains = function(self, value)
+		if self:empty() then return false end
+		local pointer = self.first
+		while pointer <= self.last do 
+			if self[pointer] == value then return true end
+		end
+		return false
+	end
+	--
 	queue.push = function(self, value)
 	  local last = self.last + 1
 	  self.last = last

@@ -23,6 +23,11 @@ QuestOutLoud.modules = {}
 
 
 ----
+QuestOutLoud.PAUSE_DURATION = 2
+----
+
+
+----
 QuestOutLoud.defaults = {
     profile =  {
 		bgtexture = [[Interface\Tooltips\UI-Tooltip-Background]],
@@ -228,15 +233,25 @@ end
 function QuestOutLoud:QueueSound(filePath, soundInfo)
 	self:Debug("QueueSound("..filePath..")")
 	--
-	if self.currentSoundHandle == nil then
+	if self.soundQueue:empty() == true and self.playing ~= true then
 		self:PlaySound(filePath, soundInfo)
-	else
-		self:Debug("Sound queued.")
-		local queuedSound = {
-			file = filePath,
-			info = soundInfo
-		}
-		self.soundQueue:push(queuedSound)
+	else 
+		local alreadyQueued = false
+		if self.currentSoundPath == filePath then alreadyQueued = true end
+		local pointer = self.soundQueue.first
+		while pointer <= self.soundQueue.last and alreadyQueued == false do 
+			if self.soundQueue[pointer].file == filePath then alreadyQueued = true end
+		end
+		if alreadyQueued == false then
+			local queuedSound = {
+				file = filePath,
+				info = soundInfo
+			}
+			self:Debug("Sound queued.")
+			self.soundQueue:push(queuedSound)
+		else
+			self:Debug("Sound not alrady playing or in queue.")
+		end
 	end
 end
 ----
@@ -248,12 +263,13 @@ function QuestOutLoud:SoundPlaybackFinished()
 	self:Debug("SoundPlaybackFinished")
 	self.currentSoundHandle = nil
 	self.currentSoundInfo = nil
+	self.currentSoundPath = nil
 	self.playing = false
 	self.soundTimer = nil
 	-- Play new sound from queue
-	if self.soundQueue:empty() == false then
+	if self.soundQueue:empty() ~= true then
 		local toPlay = self.soundQueue:pop()
-		self:Debug("Queuing up new sound "..toPlay.file )
+		self:Debug("Playing next sound in queue "..toPlay.file )
 		self:PlaySound(toPlay.file, toPlay.info)
 	else
 		self:Debug("Queue empty, hiding main frame." )
@@ -268,18 +284,19 @@ end
 function QuestOutLoud:PlaySound(filePath, soundInfo)
 	self:Debug("PlaySound("..filePath..")")
 	--
-	if self.currentSoundHandle ~= nil then
-		self:Debug("PlaySound() called when currentSoundHandle not nil, probably an error.")
-		self:StopSound()
+	if self.playing == true then
+		self:Debug("PlaySound() called while already playing, probably an error.",QuestOutLoud.LOGLEVEL.WARNING)
+		return -- exit early
 	end
 	--
 	local success, soundHandle = PlaySoundFile(filePath, "Dialog")
 	if success ~= nil then
 		self:Debug("Playing sound "..filePath)
-		self.currentSoundHandle = soundHandle
+		self.currentSoundPath = filePath
 		self.currentSoundInfo = soundInfo
+		self.currentSoundHandle = soundHandle
 		self.playing = true
-		self.soundTimer = self:ScheduleTimer("SoundPlaybackFinished", soundInfo.duration)
+		self.soundTimer = self:ScheduleTimer("SoundPlaybackFinished", soundInfo.duration + QuestOutLoud.PAUSE_DURATION)
 		--
 		self.MainFrame:Show()
 		self:SetModelID(self.Model, soundInfo.modelID)
@@ -300,5 +317,16 @@ function QuestOutLoud:StopSound()
 		self.playing = false
 		self:CancelTimer(self.soundTimer)
 		self.soundTimer = nil
+		self.currentSoundHandle = nil
 	end
+end
+
+
+-- ResumeSound --
+---- Resumes (starts over) the last sound played
+function QuestOutLoud:ResumeSound()
+	self:Debug("ResumeSound()")
+	--
+	self:PlaySound(self.currentSoundPath, self.currentSoundInfo)
+	--
 end
