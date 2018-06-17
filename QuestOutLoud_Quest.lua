@@ -21,7 +21,7 @@ QuestOutLoud.defaults.profile.playOnQuestCompleted = false
 -- OnEnable --
 ---- Called when the addon is enabled, and on log-in and /reload, after all addons have loaded
 function QuestOutLoud_Quest:OnEnable()
-	self.parent:QOLPrint("Quest Module Enabled.")
+	self.parent:Debug("Quest Module Enabled.")
 
 	-- Event Setup --
 	self:RegisterEvents( {
@@ -30,8 +30,8 @@ function QuestOutLoud_Quest:OnEnable()
 	})
 
 	-- Quest log buttons --
-	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton", 60, -30)
-	self.QuestMapFrameButton = self:CreateQuestLogButton(QuestMapFrame, "QuestMapFrameButton", 150, 30)
+	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton", -10, -30)
+	self.QuestMapFrameButton = self:CreateQuestLogButton(QuestMapFrame, "QuestMapFrameButton", -10, 30)
 	if QuestOutLoudDB.profile.showButton == true then
 		QuestOutLoud_Quest.QuestFrameButton:Show()
 		QuestOutLoud_Quest.QuestMapFrameButton:Show()
@@ -59,13 +59,13 @@ end
 function QuestOutLoud_Quest:CreateQuestLogButton(parent, name, posX, posY)
 	self.parent:Debug("CreateQuestLogButton()")
 	--
-	-- TODO: Some kind of sound symbol on button
+	-- TODO: Some kind of play symbol on button
 	--
 	local button = CreateFrame("Button", "QuestOutLoud."..name, parent)
-	button:SetPoint("TOPLEFT", parent, "TOPLEFT", posX, posY)
-	button:SetWidth(75)
+	button:SetPoint("TOPRIGHT", parent, "TOPRIGHT", posX, posY)
+	button:SetWidth(90)
 	button:SetHeight(25)
-	button:SetText("QOL")
+	button:SetText("Play")
 	button:SetNormalFontObject("GameFontNormal")
 	--
 	button:SetScript("OnClick", function(self, button)
