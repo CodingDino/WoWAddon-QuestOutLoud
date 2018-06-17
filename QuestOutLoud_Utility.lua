@@ -24,6 +24,7 @@ function QuestOutLoud.Queue:new ()
 		local pointer = self.first
 		while pointer <= self.last do 
 			if self[pointer] == value then return true end
+			pointer = pointer + 1
 		end
 		return false
 	end

@@ -30,6 +30,7 @@ QuestOutLoud.PAUSE_DURATION = 2
 ----
 QuestOutLoud.defaults = {
     profile =  {
+		enabled = true,
 		bgtexture = [[Interface\Tooltips\UI-Tooltip-Background]],
 		bgcolor = {0.2, 0.2, 0.2, 0.7},
 		bordertexture = [[Interface\Tooltips\UI-Tooltip-Border]],
@@ -120,6 +121,20 @@ local options = {
 		        },
     		}
         },
+        enableButton = {
+            type = "toggle",
+            name = "Enable Addon",
+            desc = "Turn the addon on or off.",
+            get = function(info) return QuestOutLoudDB.profile.enabled end,
+            set = function(info,val) 
+            	QuestOutLoudDB.profile.enabled = val
+            	if QuestOutLoudDB.profile.enabled == true then
+            		QuestOutLoud:Enable()
+            	else
+            		QuestOutLoud:Disable()
+            	end
+        	end
+        },
         
     },
 }
@@ -144,9 +159,9 @@ end
 -- OnEnable --
 ---- Called when the addon is enabled, and on log-in and /reload, after all addons have loaded
 function QuestOutLoud:OnEnable()
-	self:QOLPrint("Enabled.")
+	self:Debug("Enabled.")
 	
-	self:SetupFrames()	-- Applies profile display settings
+	--self:SetupFrames()	-- Applies profile display settings
 
 	-- Enable all modules
 	for name, module in self:IterateModules() do
@@ -159,7 +174,7 @@ end
 -- OnDisable --
 ---- Called when the addon is disabled
 function QuestOutLoud:OnDisable()
-	self:QOLPrint("Disabled.")
+	self:Debug("Disabled.")
 end
 ----
 
@@ -241,6 +256,7 @@ function QuestOutLoud:QueueSound(filePath, soundInfo)
 		local pointer = self.soundQueue.first
 		while pointer <= self.soundQueue.last and alreadyQueued == false do 
 			if self.soundQueue[pointer].file == filePath then alreadyQueued = true end
+			pointer = pointer + 1
 		end
 		if alreadyQueued == false then
 			local queuedSound = {
@@ -273,7 +289,7 @@ function QuestOutLoud:SoundPlaybackFinished()
 		self:PlaySound(toPlay.file, toPlay.info)
 	else
 		self:Debug("Queue empty, hiding main frame." )
-		self.MainFrame:Hide() -- Hide frame if we're done playing
+		--self.MainFrame:Hide() -- Hide frame if we're done playing
 	end
 end
 ----
@@ -298,9 +314,9 @@ function QuestOutLoud:PlaySound(filePath, soundInfo)
 		self.playing = true
 		self.soundTimer = self:ScheduleTimer("SoundPlaybackFinished", soundInfo.duration + QuestOutLoud.PAUSE_DURATION)
 		--
-		self.MainFrame:Show()
-		self:SetModelID(self.Model, soundInfo.modelID)
-		self:SetSpeakerName(self.SpeakerName, soundInfo.NPCName)
+		--self.MainFrame:Show()
+		--self:SetModelID(self.Model, soundInfo.modelID)
+		--self:SetSpeakerName(self.SpeakerName, soundInfo.NPCName)
 	else
 		self:Error("Failed to play sound "..filePath)
 	end
