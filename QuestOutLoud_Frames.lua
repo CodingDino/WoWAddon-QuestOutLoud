@@ -156,13 +156,28 @@ function QuestOutLoud:CreateMiniMapButton()
 		icon = "Interface\\Icons\\Inv_inscription_scroll", -- TODO: Better icon!
 		OnClick = function(clickedframe, button)
 			if button == "LeftButton" then
-				self:Enable(not QuestOutLoudDB.Enabled);
+				self:Debug("Left-click on minimap button")
+				if QuestOutLoudDB.profile.enabled then
+					self:Debug("Attempting Disable")
+					QuestOutLoudDB.profile.enabled = false
+					QuestOutLoud:Disable()
+				else
+					self:Debug("Attempting Enable")
+					QuestOutLoudDB.profile.enabled = true
+					QuestOutLoud:Enable()
+				end
 			elseif button == "RightButton" then
-				InterfaceOptionsFrame_OpenToCategory("QuestOutLoud")
+				self:Debug("Right-click on minimap button")
+				InterfaceOptionsFrame_OpenToCategory("Quest Out Loud")
+				InterfaceOptionsFrame_OpenToCategory("Quest Out Loud") -- twice because blizz bugs suck
 			end
 		end,
 		OnTooltipShow = function(self) 
-			self:AddLine("QuestOutLoud")
+			if (QuestOutLoudDB.profile.enabled) then
+				self:AddLine("QuestOutLoud - |cff00ff00Enabled|r")
+			else
+				self:AddLine("QuestOutLoud - |cffff0000Disabled|r")
+			end
 			self:AddLine("Left-click to enable/disable addon", 1, 1, 1)
 			self:AddLine("Right-click to open config panel", 1, 1, 1) 
 		end,
