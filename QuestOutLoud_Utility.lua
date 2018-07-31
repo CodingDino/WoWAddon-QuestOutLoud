@@ -19,6 +19,14 @@ function QuestOutLoud.Queue:new ()
 	  end
 	end
 	--
+	queue.size = function(self)
+	  if self.first > self.last then 
+		return 0
+	  else
+		return self.last-self.first + 1;
+	  end
+	end
+	--
 	queue.contains = function(self, value)
 		if self:empty() then return false end
 		local pointer = self.first
@@ -42,6 +50,11 @@ function QuestOutLoud.Queue:new ()
 	  self[first] = nil        -- to allow garbage collection
 	  self.first = first + 1
 	  return value
+	end
+	--
+	queue.clear = function(self)
+		self.first = 0;
+		self.last = -1;
 	end
 	--
 	return queue

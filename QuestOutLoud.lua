@@ -37,14 +37,13 @@ QuestOutLoud.defaults = {
 		border = true,
 		posX = 0,  		-- relative to center of screen
 		posY = -10, 	-- relative to top of screen
-		width = 200,
-		height = 100,
 		playOnQuestOpen = true,
 		playOnQuestAccept = false,
 		playOnQuestProgressOpen = true,
 		playOnQuestCompleteOpen = true,
 		playOnQuestCompleted = false,
 		showButton = true,
+		showMainFrame = true,
     },
 }
 ----
@@ -56,28 +55,19 @@ local options = {
     handler = QuestOutLoud,
     type = "group",
     args = {
-        buttons = {
-            type = "group",
-            name = "Button Settings",
-            inline = true,
-    		args = {
-		        showButton = {
-		            type = "toggle",
-		            name = "Show Button In Log",
-		            desc = "Whether or not we should show the play button in the quest log.",
-		            get = function(info) return QuestOutLoudDB.profile.showButton end,
-		            set = function(info,val) 
-		            	QuestOutLoudDB.profile.showButton = val
-		            	if QuestOutLoudDB.profile.showButton == true then
-		            		QuestOutLoud_Quest.QuestFrameButton:Show()
-		            		QuestOutLoud_Quest.QuestMapFrameButton:Show()
-		            	else
-		            		QuestOutLoud_Quest.QuestFrameButton:Hide()
-		            		QuestOutLoud_Quest.QuestMapFrameButton:Hide()
-		            	end
-		        	end
-		        }
-    		}
+        enableButton = {
+            type = "toggle",
+            name = "Enable Addon",
+            desc = "Turn the addon on or off.",
+            get = function(info) return QuestOutLoudDB.profile.enabled end,
+            set = function(info,val) 
+            	QuestOutLoudDB.profile.enabled = val
+            	if QuestOutLoudDB.profile.enabled == true then
+            		QuestOutLoud:Enable()
+            	else
+            		QuestOutLoud:Disable()
+            	end
+        	end
         },
         autoplay = {
             type = "group",
@@ -121,19 +111,40 @@ local options = {
 		        },
     		}
         },
-        enableButton = {
-            type = "toggle",
-            name = "Enable Addon",
-            desc = "Turn the addon on or off.",
-            get = function(info) return QuestOutLoudDB.profile.enabled end,
-            set = function(info,val) 
-            	QuestOutLoudDB.profile.enabled = val
-            	if QuestOutLoudDB.profile.enabled == true then
-            		QuestOutLoud:Enable()
-            	else
-            		QuestOutLoud:Disable()
-            	end
-        	end
+        buttons = {
+            type = "group",
+            name = "Display Settings",
+            inline = true,
+    		args = {
+		        showButton = {
+		            type = "toggle",
+		            name = "Show Button In Log",
+		            desc = "Whether or not we should show the play button in the quest log.",
+		            get = function(info) return QuestOutLoudDB.profile.showButton end,
+		            set = function(info,val) 
+		            	QuestOutLoudDB.profile.showButton = val
+		            	if QuestOutLoudDB.profile.showButton == true then
+		            		QuestOutLoud_Quest.QuestFrameButton:Show()
+		            		QuestOutLoud_Quest.QuestMapFrameButton:Show()
+		            	else
+		            		QuestOutLoud_Quest.QuestFrameButton:Hide()
+		            		QuestOutLoud_Quest.QuestMapFrameButton:Hide()
+		            	end
+		        	end
+		        },
+		        showMainFrame = {
+		            type = "toggle",
+		            name = "Show Control Frame",
+		            desc = "Whether or not we should show a frame with controls and info while a quest is playing.",
+		            get = function(info) return QuestOutLoudDB.profile.showMainFrame end,
+		            set = function(info,val) 
+		            	QuestOutLoudDB.profile.showMainFrame = val
+		            	if QuestOutLoudDB.profile.showButton == false then
+		            		QuestOutLoud_Quest.MainFrame:Hide()
+		            	end
+		        	end
+		        }
+    		}
         },
         
     },
@@ -161,7 +172,7 @@ end
 function QuestOutLoud:OnEnable()
 	self:Debug("Enabled.")
 	
-	--self:SetupFrames()	-- Applies profile display settings
+	self:SetupFrames()	-- Applies profile display settings
 
 	-- Enable all modules
 	for name, module in self:IterateModules() do
@@ -265,6 +276,8 @@ function QuestOutLoud:QueueSound(filePath, soundInfo)
 			}
 			self:Debug("Sound queued.")
 			self.soundQueue:push(queuedSound)
+			QuestOutLoud.QueueCounter:Show();
+			QuestOutLoud.QueueCounter:SetText(self.soundQueue:size());
 		else
 			self:Debug("Sound not alrady playing or in queue.")
 		end
@@ -287,9 +300,14 @@ function QuestOutLoud:SoundPlaybackFinished()
 		local toPlay = self.soundQueue:pop()
 		self:Debug("Playing next sound in queue "..toPlay.file )
 		self:PlaySound(toPlay.file, toPlay.info)
+		if (self.soundQueue:empty()) then
+			QuestOutLoud.QueueCounter:Hide()
+		else
+			QuestOutLoud.QueueCounter:SetText(self.soundQueue:size());
+		end
 	else
 		self:Debug("Queue empty, hiding main frame." )
-		--self.MainFrame:Hide() -- Hide frame if we're done playing
+		self.MainFrame:Hide() -- Hide frame if we're done playing
 	end
 end
 ----
@@ -314,9 +332,21 @@ function QuestOutLoud:PlaySound(filePath, soundInfo)
 		self.playing = true
 		self.soundTimer = self:ScheduleTimer("SoundPlaybackFinished", soundInfo.duration + QuestOutLoud.PAUSE_DURATION)
 		--
-		--self.MainFrame:Show()
-		--self:SetModelID(self.Model, soundInfo.modelID)
-		--self:SetSpeakerName(self.SpeakerName, soundInfo.NPCName)
+		if QuestOutLoudDB.profile.showMainFrame == true then
+			self.MainFrame:Show()
+			self:SetTitle(self.Title, soundInfo.displayTitle)
+			self.PauseIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\PauseButton")
+			--self:SetModelID(self.Model, soundInfo.modelID)
+			--self:SetSpeakerName(self.SpeakerName, soundInfo.NPCName)
+
+			if soundInfo.triggerType == "questAccept" then
+				QuestOutLoud.ContentTypeIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\AcceptIcon")
+			elseif soundInfo.triggerType == "questProgress" then
+				QuestOutLoud.ContentTypeIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\ProgressIcon")
+			elseif soundInfo.triggerType == "questCompletion" then
+				QuestOutLoud.ContentTypeIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\CompletionIcon")
+			end
+		end
 	else
 		self:Error("Failed to play sound "..filePath)
 	end
@@ -336,6 +366,7 @@ function QuestOutLoud:StopSound()
 		self.currentSoundHandle = nil
 	end
 end
+----
 
 
 -- ResumeSound --
@@ -345,4 +376,12 @@ function QuestOutLoud:ResumeSound()
 	--
 	self:PlaySound(self.currentSoundPath, self.currentSoundInfo)
 	--
+end
+----
+
+
+-- ClearQueue --
+---- Clears the sound queue
+function QuestOutLoud:ClearSoundQueue()
+	self.soundQueue:clear();
 end

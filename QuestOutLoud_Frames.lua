@@ -7,6 +7,7 @@
 ---- Creates the UI
 function QuestOutLoud:CreateFrames()
 	self:Debug("CreateFrames()")
+	self:CreateMainFrame();
 	self:CreateMiniMapButton();
 end
 ----
@@ -37,13 +38,18 @@ function QuestOutLoud:CreateMainFrame()
 		end
 	end)
 	--
+	self:CreateClearButton(frame)
+	self:CreateSkipButton(frame)
 	self:CreateStopButton(frame)
+	self:CreateQueueCounter(frame)
 	--
 	self.MainFrame = frame
 	frame:Hide()
 	--
-	self:CreateModel()
-	self:CreateSpeakerName(self.Model)
+	self:CreateTitle(frame);
+	--
+	--self:CreateModel()
+	--self:CreateSpeakerName(frame)
 end
 ----
 
@@ -81,7 +87,7 @@ end
 -- CreateSpeakerName
 ---- Creates the text for the speaking character's name
 function QuestOutLoud:CreateSpeakerName(parent)
-	local text = CreateFrame("Button", "QuestOutLoud.StopButton", parent)
+	local text = CreateFrame("Button", "QuestOutLoud.SpeakerName", parent)
 	text:SetPoint("TOP", parent, "BOTTOM", 0,0)
 	text:SetWidth(75)
 	text:SetHeight(25)
@@ -100,24 +106,171 @@ end
 ----
 
 
+-- CreateTitle
+---- Creates the text for the current content's title
+function QuestOutLoud:CreateTitle(parent)
+	local text = CreateFrame("Button", "QuestOutLoud.Title", parent)
+	text:SetPoint("TOP", parent, "TOP", 0,-5)
+	text:SetWidth(75)
+	text:SetHeight(25)
+	text:SetText("TEST TITLE")
+	text:SetNormalFontObject("GameFontNormal")
+	self.Title = text
+
+	--
+	local icon = CreateFrame("Button", "QuestOutLoud.ContentTypeIcon", parent)
+	icon:SetPoint("CENTER", parent, "TOPLEFT", 5, -5)
+	icon:SetWidth(24)
+	icon:SetHeight(24)
+	local iconTex = icon:CreateTexture()
+	iconTex:SetTexture("Interface\\Addons\\QuestOutLoud\\AcceptIcon")
+	iconTex:SetAllPoints(icon)
+	icon.texture = iconTex
+
+	QuestOutLoud.ContentTypeIcon = iconTex;
+
+	return text
+end
+----
+
+
+-- SetTitle
+---- Sets the name of the speaker displayed on the main frame
+function QuestOutLoud:SetTitle(frame, name)
+	frame:SetText(name)
+end
+----
+
+
+-- CreateClearButton
+---- Create button to stop sound playing and clear all sounds in queue
+function QuestOutLoud:CreateClearButton(parent)
+	self:Debug("CreateClearButton()")
+	--
+	local button = CreateFrame("Button", "QuestOutLoud.ClearButton", parent)
+	button:SetPoint("CENTER", parent, "CENTER", -30,-10)
+	button:SetWidth(24)
+	button:SetHeight(24)
+
+	local icon = CreateFrame("Frame", "QuestOutLoud.ClearButtonIcon", button)
+	icon:SetPoint("CENTER", button, "CENTER", 0,0)
+	icon:SetWidth(12)
+	icon:SetHeight(12)
+	local iconTex = icon:CreateTexture()
+	iconTex:SetTexture("Interface\\Addons\\QuestOutLoud\\ExitButton")
+	iconTex:SetAllPoints(icon)
+	icon.texture = iconTex
+
+	--
+	button:SetScript("OnClick", function(self, button)
+		if QuestOutLoud.currentSoundHandle ~= nil then
+			QuestOutLoud:StopSound()
+		end
+		QuestOutLoud:ClearSoundQueue()
+		QuestOutLoud.MainFrame:Hide()
+	end)
+	--
+	local ntex = button:CreateTexture()
+	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+	ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ntex:SetAllPoints()	
+	button:SetNormalTexture(ntex)
+	--
+	local htex = button:CreateTexture()
+	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+	htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	htex:SetAllPoints()
+	button:SetHighlightTexture(htex)
+	--
+	local ptex = button:CreateTexture()
+	ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+	ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ptex:SetAllPoints()
+	button:SetPushedTexture(ptex)
+	--
+	return button
+end
+----
+
+
+-- CreateSkipButton
+---- Create button to stop the current sound and skip to the next sound
+function QuestOutLoud:CreateSkipButton(parent)
+	self:Debug("CreateSkipButton()")
+	--
+	local button = CreateFrame("Button", "QuestOutLoud.SkipButton", parent)
+	button:SetPoint("CENTER", parent, "CENTER", 0,-10)
+	button:SetWidth(24)
+	button:SetHeight(24)
+
+	local icon = CreateFrame("Frame", "QuestOutLoud.SkipButtonIcon", button)
+	icon:SetPoint("CENTER", button, "CENTER", 0,0)
+	icon:SetWidth(12)
+	icon:SetHeight(12)
+	local iconTex = icon:CreateTexture()
+	iconTex:SetTexture("Interface\\Addons\\QuestOutLoud\\SkipButton")
+	iconTex:SetAllPoints(icon)
+	icon.texture = iconTex
+
+	--
+	button:SetScript("OnClick", function(self, button)
+		if QuestOutLoud.currentSoundHandle ~= nil then
+			QuestOutLoud:StopSound()
+		end
+		QuestOutLoud:SoundPlaybackFinished()
+	end)
+	--
+	local ntex = button:CreateTexture()
+	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
+	ntex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ntex:SetAllPoints()	
+	button:SetNormalTexture(ntex)
+	--
+	local htex = button:CreateTexture()
+	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
+	htex:SetTexCoord(0, 0.625, 0, 0.6875)
+	htex:SetAllPoints()
+	button:SetHighlightTexture(htex)
+	--
+	local ptex = button:CreateTexture()
+	ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
+	ptex:SetTexCoord(0, 0.625, 0, 0.6875)
+	ptex:SetAllPoints()
+	button:SetPushedTexture(ptex)
+	--
+	return button
+end
+----
+
+
 -- CreateStopButton
 ---- Create button to stop sound playing
 function QuestOutLoud:CreateStopButton(parent)
 	self:Debug("CreateStopButton()")
 	--
-	-- TODO: Some kind of sound symbol on button
-	--
 	local button = CreateFrame("Button", "QuestOutLoud.StopButton", parent)
-	button:SetPoint("TOPRIGHT", parent, "TOPRIGHT", -5,-5)
-	button:SetWidth(75)
-	button:SetHeight(25)
-	button:SetText("STOP")
-	button:SetNormalFontObject("GameFontNormal")
+	button:SetPoint("CENTER", parent, "CENTER", 30,-10)
+	button:SetWidth(24)
+	button:SetHeight(24)
+
+	local icon = CreateFrame("Frame", "QuestOutLoud.StopButtonIcon", button)
+	icon:SetPoint("CENTER", button, "CENTER", 0,0)
+	icon:SetWidth(12)
+	icon:SetHeight(12)
+	local iconTex = icon:CreateTexture()
+	iconTex:SetTexture("Interface\\Addons\\QuestOutLoud\\PauseButton")
+	iconTex:SetAllPoints(icon)
+	icon.texture = iconTex
+	QuestOutLoud.PauseIcon = iconTex;
+
 	--
 	button:SetScript("OnClick", function(self, button)
 		if QuestOutLoud.currentSoundHandle ~= nil then
 			QuestOutLoud:StopSound()
-			-- TODO: Change to play?
+			QuestOutLoud.PauseIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\PlayButton")
+		elseif QuestOutLoud.currentSoundInfo ~= nil then
+			QuestOutLoud:ResumeSound()
+			QuestOutLoud.PauseIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\PauseButton")
 		end
 	end)
 	--
@@ -139,6 +292,31 @@ function QuestOutLoud:CreateStopButton(parent)
 	ptex:SetAllPoints()
 	button:SetPushedTexture(ptex)
 	--
+	return button
+end
+----
+
+
+-- CreateQueueCounter
+---- Create button to stop sound playing and clear all sounds in queue
+function QuestOutLoud:CreateQueueCounter(parent)
+	self:Debug("CreateQueueCounter()")
+	--
+	local button = CreateFrame("Button", "QuestOutLoud.CreateQueueCounter", parent)
+	button:SetPoint("CENTER", parent, "TOPRIGHT", -5,-5)
+	button:SetWidth(24)
+	button:SetHeight(24)
+	local iconTex = button:CreateTexture()
+	iconTex:SetTexture("Interface\\Addons\\QuestOutLoud\\CounterWindow")
+	iconTex:SetAllPoints(button)
+	button.texture = iconTex
+
+	button:SetText("0")
+	button:SetNormalFontObject("GameFontNormal")
+
+	QuestOutLoud.QueueCounter = button;
+	button:Hide(); -- should be hidden to start with
+
 	return button
 end
 ----
@@ -203,8 +381,8 @@ function QuestOutLoud:SetFramePoints()
 	local frame = self.MainFrame
 	frame:ClearAllPoints()
 	frame:SetPoint("TOP", "UIParent" ,"TOP", QuestOutLoudDB.profile.posX, QuestOutLoudDB.profile.posY)
-	frame:SetHeight(QuestOutLoudDB.profile.height)
-	frame:SetWidth(QuestOutLoudDB.profile.width)
+	frame:SetHeight(70)
+	frame:SetWidth(200)
 end
 ----
 
