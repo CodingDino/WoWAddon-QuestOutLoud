@@ -153,7 +153,7 @@ function QuestOutLoud:CreateMiniMapButton()
 
 	local miniMapButton = ldb:NewDataObject("QuestOutLoud", {
 		type = "launcher",
-		icon = "Interface\\Icons\\Inv_inscription_scroll", -- TODO: Better icon!
+		icon = "Interface\\Addons\\QuestOutLoud\\QOLIcon",
 		OnClick = function(clickedframe, button)
 			if button == "LeftButton" then
 				self:Debug("Left-click on minimap button")
