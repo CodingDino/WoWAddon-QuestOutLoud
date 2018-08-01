@@ -193,7 +193,7 @@ function QuestOutLoud_Quest:CreateQuestLogButton(parent, name, posX, posY)
 		elseif QuestFrameRewardPanel:IsVisible() then
 			triggerType = "questCompletion"
 		end
-		QuestOutLoud:RequestSound(triggerType,questID)
+		QuestOutLoud:RequestSound(triggerType,questID, true)
 	end)
 	---
 	return button
