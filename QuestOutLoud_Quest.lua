@@ -31,7 +31,7 @@ function QuestOutLoud_Quest:OnEnable()
 
 	-- Quest log buttons --
 	self.QuestFrameButton = self:CreateQuestLogButton(QuestFrame, "QuestFrameButton", -10, -30)
-	self.QuestMapFrameButton = self:CreateQuestLogButton(QuestMapFrame, "QuestMapFrameButton", -10, 30)
+	self.QuestMapFrameButton = self:CreateQuestLogButton(QuestMapFrame.DetailsFrame, "QuestMapFrameButton", 10, 30)
 	if QuestOutLoudDB.profile.showButton == true then
 		QuestOutLoud_Quest.QuestFrameButton:Show()
 		QuestOutLoud_Quest.QuestMapFrameButton:Show()
@@ -59,14 +59,14 @@ end
 function QuestOutLoud_Quest:CreateQuestLogButton(parent, name, posX, posY)
 	self.parent:Debug("CreateQuestLogButton()")
 	--
-	-- TODO: Some kind of play symbol on button
-	--
 	local button = CreateFrame("Button", "QuestOutLoud."..name, parent)
 	button:SetPoint("TOPRIGHT", parent, "TOPRIGHT", posX, posY)
-	button:SetWidth(90)
-	button:SetHeight(25)
-	button:SetText("Play")
-	button:SetNormalFontObject("GameFontNormal")
+	button:SetWidth(24)
+	button:SetHeight(24)
+	local iconTex = button:CreateTexture()
+	iconTex:SetTexture("Interface\\Addons\\QuestOutLoud\\QOLButton")
+	iconTex:SetAllPoints(button)
+	button.texture = iconTex
 	--
 	button:SetScript("OnClick", function(self, button)
 		local index = GetQuestLogSelection()
@@ -81,25 +81,7 @@ function QuestOutLoud_Quest:CreateQuestLogButton(parent, name, posX, posY)
 		end
 		QuestOutLoud:RequestSound(triggerType,questID)
 	end)
-	--
-	local ntex = button:CreateTexture()
-	ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
-	ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-	ntex:SetAllPoints()	
-	button:SetNormalTexture(ntex)
-	--
-	local htex = button:CreateTexture()
-	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-	htex:SetTexCoord(0, 0.625, 0, 0.6875)
-	htex:SetAllPoints()
-	button:SetHighlightTexture(htex)
-	--
-	local ptex = button:CreateTexture()
-	ptex:SetTexture("Interface/Buttons/UI-Panel-Button-Down")
-	ptex:SetTexCoord(0, 0.625, 0, 0.6875)
-	ptex:SetAllPoints()
-	button:SetPushedTexture(ptex)
-	--
+	---
 	return button
 end
 ----
