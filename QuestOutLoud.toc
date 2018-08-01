@@ -2,7 +2,7 @@
 ## Title: QuestOutLoud
 ## Notes: Reads quest text to you
 ## Author: Jiyambi
-## SavedVariables: QuestOutLoudData
+## SavedVariables: QuestOutLoudData, QuestOutLoudData_Quest
 ## SavedVariablesPerCharacter: QuestOutLoudCharDB
 ## Version: 8.0.0
 ## X-License: MIT
