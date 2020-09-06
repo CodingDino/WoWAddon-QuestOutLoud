@@ -34,7 +34,7 @@
 -- end
 -- @class file
 -- @name AceBucket-3.0.lua
--- @release $Id: AceBucket-3.0.lua 895 2009-12-06 16:28:55Z nevcairiel $
+-- @release $Id: AceBucket-3.0.lua 781 2009-04-05 10:01:39Z nevcairiel $
 
 local MAJOR, MINOR = "AceBucket-3.0", 3
 local AceBucket, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
@@ -47,15 +47,13 @@ AceBucket.embeds = AceBucket.embeds or {}
 -- the libraries will be lazyly bound later, to avoid errors due to loading order issues
 local AceEvent, AceTimer
 
--- Lua APIs
-local tconcat = table.concat
-local type, next, pairs, select = type, next, pairs, select
-local tonumber, tostring, rawset = tonumber, tostring, rawset
-local assert, loadstring, error = assert, loadstring, error
-
--- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
--- List them here for Mikk's FindGlobals script
--- GLOBALS: LibStub, geterrorhandler
+-- local upvalues
+local type = type
+local next = next
+local pairs = pairs
+local select = select
+local tonumber = tonumber
+local tostring = tostring
 
 local bucketCache = setmetatable({}, {__mode='k'})
 
@@ -86,7 +84,7 @@ local function CreateDispatcher(argCount)
 	
 	local ARGS = {}
 	for i = 1, argCount do ARGS[i] = "arg"..i end
-	code = code:gsub("ARGS", tconcat(ARGS, ", "))
+	code = code:gsub("ARGS", table.concat(ARGS, ", "))
 	return assert(loadstring(code, "safecall Dispatcher["..argCount.."]"))(xpcall, errorhandler)
 end
 

@@ -6,6 +6,7 @@
 ----
 QuestOutLoud_Quest = QuestOutLoud:NewModule("QuestOutLoud_Quest", "AceEvent-3.0")
 QuestOutLoud_Quest.parent = QuestOutLoud
+QuestOutLoud_Quest.currentID = nil
 ----
 
 
@@ -183,9 +184,9 @@ function QuestOutLoud_Quest:CreateQuestLogButton(parent, name, posX, posY)
 	button.texture = iconTex
 	--
 	button:SetScript("OnClick", function(self, button)
-		local index = GetQuestLogSelection()
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory, isHidden = GetQuestLogTitle(index)
-		if questID == 0 then questID = GetQuestID() end
+		local index = C_QuestLog.GetSelectedQuest()
+		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory, isHidden = C_QuestLog.GetTitleForLogIndex(index)
+		if questID == nil then questID = GetQuestID() end
 		QuestOutLoud:Debug("Quest log button: QID = "..questID)
 		local triggerType = "questAccept"
 		if QuestFrameProgressPanel:IsVisible() then

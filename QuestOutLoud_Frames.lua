@@ -18,7 +18,7 @@ end
 function QuestOutLoud:CreateMainFrame()
 	self:Debug("CreateMainFrame()")
 	--
-	local frame = CreateFrame("Button", "QuestOutLoud.MainFrame", UIParent)
+	local frame = CreateFrame("Button", "QuestOutLoud.MainFrame", UIParent,  BackdropTemplateMixin and "BackdropTemplate")
 	--
 	frame:SetMovable(true)
 	frame:SetClampedToScreen(true)
@@ -57,7 +57,7 @@ end
 -- CreateModel
 ---- Creates the model to be used in the main frame
 function QuestOutLoud:CreateModel()
-	local model = CreateFrame("PlayerModel", "QuestOutLoud.Model", self.MainFrame)
+	local model = CreateFrame("PlayerModel", "QuestOutLoud.Model", self.MainFrame,  BackdropTemplateMixin and "BackdropTemplate")
 	model:SetPoint("TOPLEFT", self.MainFrame ,"TOPLEFT", 5, -5)
 	model:SetPoint("BOTTOMRIGHT", self.MainFrame ,"BOTTOMLEFT", 95, 25)
 	
@@ -383,6 +383,7 @@ function QuestOutLoud:SetFramePoints()
 	frame:SetPoint("TOP", "UIParent" ,"TOP", QuestOutLoudDB.profile.posX, QuestOutLoudDB.profile.posY)
 	frame:SetHeight(70)
 	frame:SetWidth(200)
+
 end
 ----
 
@@ -392,7 +393,7 @@ end
 function QuestOutLoud:SetupBackground()
 	self:Debug("SetupBackground()")
 	local mainFrame = self.MainFrame
-	
+
 	-- Textures and Borders --
 	mainFrame:SetBackdrop( {
 		bgFile = QuestOutLoudDB.profile.bgtexture,
@@ -400,7 +401,7 @@ function QuestOutLoud:SetupBackground()
 		tile = true, tileSize = 16, edgeSize = 16,
 		insets = { left = 4,  right = 3,  top = 4,  bottom = 3 }
 	})
-
+	
 	-- Colors --
 	mainFrame:SetBackdropColor(QuestOutLoudDB.profile.bgcolor[1], QuestOutLoudDB.profile.bgcolor[2], QuestOutLoudDB.profile.bgcolor[3], QuestOutLoudDB.profile.bgcolor[4])
 
