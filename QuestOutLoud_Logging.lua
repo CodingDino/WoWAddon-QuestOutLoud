@@ -10,7 +10,7 @@ QuestOutLoud.LOGLEVEL.NONE = 0;
 QuestOutLoud.LOGLEVEL.ERROR = 1;
 QuestOutLoud.LOGLEVEL.WARNING = 2;
 QuestOutLoud.LOGLEVEL.DEBUG = 3;
-QuestOutLoud.DebugLevel = QuestOutLoud.LOGLEVEL.ERROR -- TODO: CHANGE ME!
+QuestOutLoud.DebugLevel = QuestOutLoud.LOGLEVEL.DEBUG -- TODO: CHANGE ME!
 QuestOutLoud.LogSerial = 0
 QuestOutLoud.Log = {}
 ----

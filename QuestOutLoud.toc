@@ -4,7 +4,7 @@
 ## Author: Jiyambi
 ## SavedVariables: QuestOutLoudData, QuestOutLoudData_Quest
 ## SavedVariablesPerCharacter: QuestOutLoudCharDB
-## Version: 8.0.0
+## Version: 9.0.0
 ## X-License: MIT
 
 Libraries\LibStub\LibStub.lua

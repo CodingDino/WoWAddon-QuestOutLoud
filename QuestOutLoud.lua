@@ -90,7 +90,7 @@ function QuestOutLoud:OnInitialize()
 	-- Options Setup --
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("QuestOutLoud", options, {"questoutloud", "qol"})
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("QuestOutLoud", "Quest Out Loud")
-	
+
 	---
 	self.soundQueue = QuestOutLoud.Queue:new()
 	self:RegisterChatCommands();
@@ -159,11 +159,23 @@ end
 function QuestOutLoud:RegisterSounds(sounds)
 	local QOL_sounds = QuestOutLoud.sounds
 	for k1,sound in pairs(sounds) do
-		for k2,triggerID in pairs(sound.triggerIDs) do
-			QOL_sounds[sound.triggerType][triggerID] = sound
-			--self:Debug("Registered sound for "..sound.triggerType.." - "..triggerID.." - "..sound.soundFiles[1])
+		if sound.triggerID ~= nil then
+			sound.triggerIDs = { sound.triggerID }
 		end
-		--self:Debug("Registered sound for "..sound.triggerType.." - "..sound.displayTitle)
+		if sound.soundFile ~= nil then
+			sound.soundFiles = {sound.soundFile }
+		end
+		for k2,triggerID in pairs(sound.triggerIDs) do
+			--self:Debug("sound = "..QuestOutLoud.Dump(sound))
+			--self:Debug("sound.triggerType = "..sound.triggerType)
+			--self:Debug("triggerID = "..triggerID)
+			--self:Debug("QOL_sounds = "..QuestOutLoud.Dump(QOL_sounds))
+
+			QOL_sounds[sound.triggerType][triggerID] = sound
+			self:Debug("Registered sound for "..sound.triggerType.." - "..triggerID.." - "..sound.soundFiles[1])
+		end
+
+		self:Debug("Registered sound for "..sound.triggerType.." - "..sound.displayTitle)
 	end
 end
 ----
@@ -185,6 +197,7 @@ function QuestOutLoud:RequestSound(triggerType, triggerID, play)
 		end
 		return filePath, soundInfo
 	end
+
 end
 ----
 
@@ -261,6 +274,7 @@ function QuestOutLoud:PlaySound(filePath, soundInfo)
 	local success, soundHandle = PlaySoundFile(filePath, "Dialog")
 	if success ~= nil then
 		self:Debug("Playing sound "..filePath)
+		self:Debug("Sound info "..QuestOutLoud.Dump(soundHandle))
 		self.currentSoundPath = filePath
 		self.currentSoundInfo = soundInfo
 		self.currentSoundHandle = soundHandle
@@ -282,7 +296,7 @@ function QuestOutLoud:PlaySound(filePath, soundInfo)
 				QuestOutLoud.ContentTypeIcon:SetTexture("Interface\\Addons\\QuestOutLoud\\CompletionIcon")
 			end
 		end
-	else
+	else  
 		self:Error("Failed to play sound "..filePath)
 	end
 	--
