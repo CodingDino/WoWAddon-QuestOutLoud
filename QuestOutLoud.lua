@@ -323,7 +323,9 @@ end
 function QuestOutLoud:ResumeSound()
 	self:Debug("ResumeSound()")
 	--
-	self:PlaySound(self.currentSoundPath, self.currentSoundInfo)
+	if self.currentSoundPath ~= nil and self.currentSoundInfo ~= nil then
+		self:PlaySound(self.currentSoundPath, self.currentSoundInfo)
+	end
 	--
 end
 ----
