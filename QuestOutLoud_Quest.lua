@@ -15,11 +15,13 @@ QuestOutLoud_Quest.defaults = {
     profile =  {
 		playOnQuestOpen = false,
 		playOnQuestAccept = true,
-		pauseForTalkingHeads = true,
 		playOnQuestProgressOpen = true,
 		playOnQuestCompleteOpen = false,
 		playOnQuestCompleted = true,
 		showQuestLogButton = true,
+		pauseForTalkingHeads = true,
+		delayAutoplayNPCSelect = true,
+		delayAutoplayDialogueClose = true,
     },
 }
 ----
@@ -50,13 +52,6 @@ local options = {
 		            get = function(info) return QuestOutLoudDB_Quest.profile.playOnQuestAccept end,
 		            set = function(info,val) QuestOutLoudDB_Quest.profile.playOnQuestAccept = val end
 		        },
-		        pauseForTalkingHeads = {
-		            type = "toggle",
-		            name = "Talking Head Pause",
-		            desc = "Pause playback while the built in voice-overs from the \"Talking Heads\" frame are active",
-		            get = function(info) return QuestOutLoudDB_Quest.profile.pauseForTalkingHeads end,
-		            set = function(info,val) QuestOutLoudDB_Quest.profile.pauseForTalkingHeads = val end
-		        },
 		        playOnQuestProgressOpen = {
 		            type = "toggle",
 		            name = "Play on Progress Open",
@@ -78,6 +73,27 @@ local options = {
 		            get = function(info) return QuestOutLoudDB_Quest.profile.playOnQuestCompleted end,
 		            set = function(info,val) QuestOutLoudDB_Quest.profile.playOnQuestCompleted = val end
 		        },
+    		}
+        },
+        delay = {
+            type = "group",
+            name = "Delay Settings",
+            inline = true,
+    		args = {
+		        pauseForTalkingHeads = {
+		            type = "toggle",
+		            name = "Talking Head Pause",
+		            desc = "Pause playback while the built in voice-overs from the \"Talking Heads\" frame are active",
+		            get = function(info) return QuestOutLoudDB_Quest.profile.pauseForTalkingHeads end,
+		            set = function(info,val) QuestOutLoudDB_Quest.profile.pauseForTalkingHeads = val end
+		        },
+    			delayAutoplayNPCSelect = {
+		            type = "toggle",
+		            name = "Delay Autoplay On NPC Select",
+		            desc = "Delays autoplay for a short time after selecting an NPC to avoid clash with NPC dialogue",
+		            get = function(info) return QuestOutLoudDB_Quest.profile.delayAutoplayNPCSelect end,
+		            set = function(info,val) QuestOutLoudDB_Quest.profile.delayAutoplayNPCSelect = val end
+		        }
     		}
         },
         display = {
@@ -123,8 +139,9 @@ function QuestOutLoud_Quest:OnInitialize()
 
 	-- Event Setup --
 	self:RegisterEvents( {
-		"QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED", "QUEST_COMPLETE", "TALKINGHEAD_CLOSE", "TALKINGHEAD_REQUESTED"
-		--, "QUEST_LOG_UPDATE"
+		"QUEST_DETAIL", "QUEST_GREETING", "QUEST_TURNED_IN", "QUEST_PROGRESS", "QUEST_ACCEPTED", "QUEST_COMPLETE", "TALKINGHEAD_CLOSE", 
+		"TALKINGHEAD_REQUESTED", "PLAYER_TARGET_CHANGED"
+		--, "QUEST_LOG_UPDATE", "UNIT_QUEST_LOG_CHANGED"
 	})
 
 	-- Quest log buttons --
@@ -206,6 +223,17 @@ end
 ---- EVENT - Called when the quest greeting is shown
 function QuestOutLoud_Quest:QUEST_GREETING()
 	self.parent:Debug("QUEST_GREETING()")
+end
+----
+
+-- PLAYER_TARGET_CHANGED
+---- EVENT - Called when the player's target changes
+function QuestOutLoud_Quest:PLAYER_TARGET_CHANGED()
+	self.parent:Debug("PLAYER_TARGET_CHANGED()")
+	-- Delay start of auto-play
+	if QuestOutLoudDB_Quest.profile.delayAutoplayNPCSelect == true then
+		self.parent:DelaySound();
+	end
 end
 ----
 

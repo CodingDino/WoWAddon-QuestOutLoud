@@ -166,6 +166,7 @@ function QuestOutLoud:CreateClearButton(parent)
 		if QuestOutLoud.currentSoundHandle ~= nil then
 			QuestOutLoud:StopSound()
 		end
+		QuestOutLoud:ClearSound()
 		QuestOutLoud:ClearSoundQueue()
 		QuestOutLoud.MainFrame:Hide()
 	end)
