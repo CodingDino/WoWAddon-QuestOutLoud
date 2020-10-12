@@ -1,10 +1,10 @@
-## Interface: 90000
+## Interface: 90001
 ## Title: QuestOutLoud
 ## Notes: Reads quest text to you
 ## Author: Jiyambi
 ## SavedVariables: QuestOutLoudData, QuestOutLoudData_Quest
 ## SavedVariablesPerCharacter: QuestOutLoudCharDB
-## Version: 9.0.2
+## Version: 1.0.0
 ## X-License: MIT
 
 Libraries\Ace3\LibStub\LibStub.lua
