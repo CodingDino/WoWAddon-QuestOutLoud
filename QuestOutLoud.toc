@@ -1,7 +1,7 @@
 ## Interface: 90001
 ## Title: QuestOutLoud
 ## Notes: Reads quest text to you
-## Author: Jiyambi
+## Author: Bounder Games
 ## SavedVariables: QuestOutLoudData, QuestOutLoudData_Quest
 ## SavedVariablesPerCharacter: QuestOutLoudCharDB
 ## Version: 1.0.0
