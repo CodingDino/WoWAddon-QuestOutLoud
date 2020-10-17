@@ -1,5 +1,5 @@
 ## Interface: 90001
-## Title: QuestOutLoud
+## Title: Quest Out Loud
 ## Notes: Reads quest text to you
 ## Author: Bounder Games
 ## SavedVariables: QuestOutLoudData, QuestOutLoudData_Quest
